@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import dotenv from 'dotenv';
+import { GptPromptForSystem, GptPromptForUser } from "../../../prompts";
 
 dotenv.config();
 const openai = new OpenAI();
@@ -14,11 +15,11 @@ async function fetchSiteInfo(siteName: string) {
         messages: [
             {
                 role: 'system',
-                content: 'You are a helpful assistant that provides detailed information about landmarks and famous sites.',
+                content: GptPromptForSystem,
             },
             {
                 role: 'user',
-                content: `Please provide detailed information about the landmark called ${siteName}`,
+                content: `${GptPromptForUser} ${siteName}`,
             },
         ],
     });
