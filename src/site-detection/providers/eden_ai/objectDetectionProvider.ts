@@ -16,13 +16,9 @@ export const detectObjects = async (imagePath: string): Promise<DetectedObject[]
       return [];
     }
 
-    console.log(`📷 Processing image for object detection: ${imagePath}`);
-
     const formData = new FormData();
     formData.append("providers", "clarifai");
     formData.append("file", fs.createReadStream(imagePath));
-
-    console.log("Sending request to Eden AI...");
 
     const response = await axios.post(EDENAI_CONFIG.ENDPOINTS.OBJECT_DETECTION, formData, {
       headers: {
@@ -30,8 +26,6 @@ export const detectObjects = async (imagePath: string): Promise<DetectedObject[]
         ...formData.getHeaders(),
       },
     });
-
-    console.log("Eden AI response received.");
 
     const clarifaiResults = response.data.clarifai?.items || [];
 
