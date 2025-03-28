@@ -1,4 +1,4 @@
-import { detectObjects } from "../src/site-detection/providers/eden_ai/objectDetectionProvider";
+import { detectObjects } from "../site-detection/providers/eden_ai/objectDetectionProvider";
 
 const imagePath = ".\\test\\KikarBialik.jpg";
 
