@@ -22,7 +22,8 @@
     "openai": "^4.86.2",
     "supertest": "^7.1.0",
     "ts-jest": "^29.3.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
