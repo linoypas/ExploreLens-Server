@@ -1,6 +1,6 @@
-import { fetchLandmarkData } from "../site-detection/providers/eden_ai/landmarkDetectionProvider"; 
+import { fetchLandmarkData } from "../../../site-detection/providers/eden_ai/landmarkDetectionProvider"; 
 
-const testImageUrl = ".\\test\\KikarBialik.jpg"; 
+const testImageUrl = "..\\KikarBialik.jpg"; 
 
 async function testProvider() {
   try {
