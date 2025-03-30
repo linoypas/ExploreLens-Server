@@ -28,3 +28,4 @@ export interface BoundingBox {
       siteName: string;
     };
   }
+  
