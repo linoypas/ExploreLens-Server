@@ -2,6 +2,9 @@ import request from "supertest";
 import initApp from "../server";
 import { Express } from "express";
 import path from "path";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 var app: Express;
 
