@@ -4,6 +4,8 @@ const router = express.Router();
 import { upload } from '../middlewares/uploader';
 import { siteInformationController } from '../controllers/siteDetectionController';
 import {mockSiteInformation}  from '../site-detection/service/detection-service';
+import { siteGptDetailsController, siteGptMockDetailsController }  from '../controllers/gptController';
+
 
 router.post('/mock-data', upload.single('image'), mockSiteInformation);
 
@@ -55,5 +57,9 @@ router.post('/mock-data', upload.single('image'), mockSiteInformation);
  *         description: No file uploaded
  */
 router.post('/detect-site', upload.single('image'), siteInformationController);
+
+router.get('/site-details', siteGptDetailsController );
+router.get('/site-details', siteGptMockDetailsController );
+
 
 export default router;
