@@ -1,7 +1,7 @@
 import express, { Express } from "express";
 import dotenv from "dotenv";
 dotenv.config();
-import siteInfoRoutes from './routes/site-info_route';
+import siteInfoRoutes from './routes/siteInfo_route';
 
 const app = express();
 app.use(express.json());
