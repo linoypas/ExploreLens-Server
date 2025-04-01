@@ -3,7 +3,7 @@ const router = express.Router();
 
 import { upload } from '../middlewares/uploader';
 import { siteInformationController, mockSiteInformation } from '../controllers/siteDetectionController';
-import { siteGptDetailsController, siteGptMockDetailsController }  from '../controllers/siteDetailsController';
+import { getGptSiteDetails, getSiteGptMockDetails }  from '../controllers/siteDetailsController';
 
 /**
  * @swagger
@@ -134,7 +134,7 @@ router.post('/detect-site', upload.single('image'), siteInformationController);
  *                   type: string
  *                   example: "No site mentioned"
  */
-router.get('/site-details', siteGptDetailsController );
+router.get('/site-details', getGptSiteDetails );
 
 /**
  * @swagger
@@ -168,7 +168,7 @@ router.get('/site-details', siteGptDetailsController );
  *                   type: string
  *                   example: "No site mentioned"
  */
-router.get('/site-mock-details', siteGptMockDetailsController );
+router.get('/site-mock-details', getSiteGptMockDetails );
 
 
 export default router;

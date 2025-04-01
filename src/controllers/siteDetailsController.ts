@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { fetchSiteInfo } from '../site-detection/providers/gpt/siteInfo_provider';
 
-export const siteGptDetailsController = async (req: Request, res: Response): Promise<void> => {
+export const getGptSiteDetails = async (req: Request, res: Response): Promise<void> => {
     const siteName = req.query.siteName as string; 
     console.log(`siteName : ${siteName}`);
   if (!siteName) {
@@ -12,7 +12,7 @@ export const siteGptDetailsController = async (req: Request, res: Response): Pro
   res.status(200).json(result);
 };
 
-export const siteGptMockDetailsController = async (req: Request, res: Response): Promise<void> => {
+export const getSiteGptMockDetails = async (req: Request, res: Response): Promise<void> => {
     const siteName = req.query.siteName as string; 
     console.log(`siteName : ${siteName}`);
   if (!siteName) {
