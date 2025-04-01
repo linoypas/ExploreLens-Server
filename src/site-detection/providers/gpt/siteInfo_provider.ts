@@ -1,13 +1,14 @@
 import OpenAI from "openai";
 import dotenv from 'dotenv';
 import { GptPromptForSystem, GptPromptForUser } from "../prompts";
+import { DescriptionResult } from "../../models/detectedObjects";
 
 dotenv.config();
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,  // Ensure your OpenAI API key is loaded correctly
 });
 
-async function fetchSiteInfo(siteName: string): Promise<string> {
+async function fetchSiteInfo(siteName: string): Promise<DescriptionResult > {
   if (!siteName) {
     throw new Error('Site name is required');
   }
@@ -28,13 +29,20 @@ async function fetchSiteInfo(siteName: string): Promise<string> {
     });
     
     // Log the actual response content
-    const result=response.choices[0].message.content || '';
-    if (result) {
-      console.log(`Detected Landmark: ${result}`);
+    const content=response.choices[0].message.content || '';
+    if (content) {
+      console.log(`Detected Landmark: ${content}`);
+      return {
+        content: content,
+        status: "success"
+      }
     } else {
       console.warn("No landmark detected.");
+      return {
+        content: "No site description.",
+        status: "failure"
+      }
     }
-    return result;
   } catch (error) {
     console.error('Error fetching site info:', error);
     throw new Error('Failed to fetch site info from GPT');
