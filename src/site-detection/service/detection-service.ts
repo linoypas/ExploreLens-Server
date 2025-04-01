@@ -6,34 +6,6 @@ import { detectObjects } from '../providers/eden_ai/objectDetectionProvider';
 import { DetectedObject, CroppedDetectedObject, DetectionResult } from '../models/detectedObjects';
 import { cropObjectsFromImage } from '../../utils/imageUtility';
 
-const mockSiteInformation = async (req: Request, res: Response): Promise<void> => {
-    console.log(`fileeee : ${req.file}`);
-
-    if (!(req as any).file) {
-        res.status(400).json({ error: 'No file uploaded' });
-        return
-    }
-    const boundingBox: BoundingBox = {
-        x: 300,
-        y: 200,
-        width: 100,  
-        height: 200,
-    };
-    const { centerX, centerY } = getCenter(boundingBox);
-    res.status(200).json({
-    message: 'Image uploaded successfully',
-    objects: [
-        {
-        labels: "paris",
-        boundingBox: boundingBox,
-        center: {
-            x: centerX,
-            y: centerY,
-          },
-        }
-    ]
-    });
-}
 
 async function detectSiteFromImagePath(imagePath: string): Promise<DetectionResult> {
     const fullImageResult = await detectSiteInFullImage(imagePath);
@@ -112,4 +84,4 @@ async function detectSiteInFullImage(imagePath: string): Promise<DetectionResult
     return { centerX, centerY };
   } 
   
-export {mockSiteInformation, detectSiteFromImagePath} ;
+export {detectSiteFromImagePath} ;

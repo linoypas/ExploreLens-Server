@@ -1,7 +1,7 @@
 import express, { Express } from "express";
 import dotenv from "dotenv";
 dotenv.config();
-import siteInfoRoutes from './routes/site-info';
+import siteInfoRoutes from './routes/siteInfo_route';
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 

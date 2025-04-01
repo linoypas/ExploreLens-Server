@@ -1,4 +1,4 @@
-import { fetchSiteInfo } from '../../../site-detection/providers/gpt/siteInfo'
+import { fetchSiteInfo } from '../../../site-detection/providers/gpt/siteInfo_provider'
 
 async function testFetchSiteInfo() {
   try {
@@ -9,5 +9,6 @@ async function testFetchSiteInfo() {
     console.error('Error during test:', error);
   }
 } 
+
 
 testFetchSiteInfo();
