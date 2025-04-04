@@ -1,10 +1,9 @@
-import { Request, Response } from 'express';
 import { BoundingBox } from '../models/detectedObjects';
 import { fetchLandmarkData } from '../providers/eden_ai/landmarkDetectionProvider';
 import { RELEVANT_TAGS } from '../../constants/relevantTags';
 import { detectObjects } from '../providers/eden_ai/objectDetectionProvider';
-import { DetectedObject, CroppedDetectedObject, DetectionResult } from '../models/detectedObjects';
-import { cropObjectsFromImage } from '../../utils/imageUtility';
+import { DetectedObject, DetectionResult } from '../models/detectedObjects';
+import { getCentralAndLargestObjects } from '../../utils/imageUtility';
 
 
 async function detectSiteFromImagePath(imagePath: string): Promise<DetectionResult> {
@@ -18,7 +17,7 @@ async function detectSiteFromImagePath(imagePath: string): Promise<DetectionResu
       return fullImageResult;
     }
   
-    const croppedResult = await detectSiteInCroppedObjects(imagePath, relevantObjects);
+    const croppedResult = await detectSiteInCroppedObjects(relevantObjects, fullImageResult.siteInformation?.siteName || '');
     if (croppedResult) {
       return croppedResult;
     }
@@ -48,27 +47,29 @@ async function detectSiteInFullImage(imagePath: string): Promise<DetectionResult
     return allObjects.filter(obj => relevantTags.includes(obj.tag.toLowerCase()));
   }
   
-  async function detectSiteInCroppedObjects(imagePath: string, objects: DetectedObject[]): Promise<DetectionResult | null> {
-    const croppedObjects: CroppedDetectedObject[] = await cropObjectsFromImage(imagePath, objects);
-  
-    for (const obj of croppedObjects) {
-      const siteName = await fetchLandmarkData(obj.croppedImagePath);
-      if (siteName) {
-        const center = getCenter(obj.boundingBox);
-        return {
-          status: 'success',
-          description: 'Famous site detected from cropped object.',
-          siteInformation: {
-            label: obj.label,
-            x: center.centerX,
-            y: center.centerY,
-            siteName,
-          },
-        };
-      }
-    }
-  
-    return null;
+function getThebiggestCentralObject(objects: DetectedObject[]): DetectedObject | undefined {
+    if (objects.length === 0) return undefined;
+
+    const prioritizedObjects = getCentralAndLargestObjects(objects);
+    const mostCentralBiggest = prioritizedObjects[0];
+    return mostCentralBiggest;
+}
+
+  async function detectSiteInCroppedObjects(objects: DetectedObject[], siteName: string): Promise<DetectionResult | null> {  
+    const centralBiggestObject = getThebiggestCentralObject(objects);
+    if (!centralBiggestObject) return null;
+
+    const center = getCenter(centralBiggestObject.boundingBox);
+    return {
+      status: 'success',
+      description: 'Famous site detected from cropped object.',
+      siteInformation: {
+        label: centralBiggestObject.tag,
+        x: center.centerX,
+        y: center.centerY,
+        siteName,
+      },
+    };
   }
   
   function buildFailureResult(): DetectionResult {
