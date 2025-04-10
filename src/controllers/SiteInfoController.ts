@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import siteInfoModel, { ISiteInfo } from "../models/siteInfoModel"
 import { Request, Response } from 'express';
 
-
 export const createSiteInfo = async (req: Request, res: Response): Promise<void> => {
     const siteInfoBody = req.body;
     try {
@@ -14,11 +13,11 @@ export const createSiteInfo = async (req: Request, res: Response): Promise<void>
     }
 }
 
-export const getSiteInfoById = async (req: Request, res: Response): Promise<void> => {
-    const itemId = req.params.id;
+export const getSiteInfoByName = async (req: Request, res: Response): Promise<void> => {
+    const siteName = req.params.siteName;
 
     try {
-      const item = await siteInfoModel.findById(itemId);
+      const item = await siteInfoModel.find({name: siteName});
       if (item != null) {
         res.json(item);
       } else {
