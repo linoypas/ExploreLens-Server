@@ -32,16 +32,8 @@ describe("Image detection test", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.message).toBe('Image uploaded successfully');
     expect(response.body.objects).toBeDefined();
-    expect(response.body.objects[0].labels).toBe('paris');
-    expect(response.body.objects[0].boundingBox).toEqual({
-      x: 300,
-      y: 200,
-      width: 100,
-      height: 200,
-    });
-    expect(response.body.objects[0].center).toEqual({
-      x: 350,
-      y: 300,
-    });
+    expect(response.body.objects[0].siteInformation.siteName).toBe('Eiffel Tower');
+    expect(response.body.objects[0].siteInformation.x).toBe(350);
+    expect(response.body.objects[0].siteInformation.y).toBe(300);
   });
 });
