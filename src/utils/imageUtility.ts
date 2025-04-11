@@ -64,3 +64,28 @@ export async function cropObjectsFromImage(
 
   return croppedResults;
 }
+
+export function getCentralAndLargestObjects(
+  objects: DetectedObject[],
+  centerThreshold: number = 0.2
+): DetectedObject[] {
+  const centerX = 0.5;
+  const centerY = 0.5;
+
+  const centralObjects = objects.filter((obj) => {
+    const objCenterX = obj.boundingBox.x + obj.boundingBox.width / 2;
+    const objCenterY = obj.boundingBox.y + obj.boundingBox.height / 2;
+
+    const dx = Math.abs(centerX - objCenterX);
+    const dy = Math.abs(centerY - objCenterY);
+
+    return dx <= centerThreshold && dy <= centerThreshold;
+  });
+
+  return centralObjects.sort((a, b) => {
+    const areaA = a.boundingBox.width * a.boundingBox.height;
+    const areaB = b.boundingBox.width * b.boundingBox.height;
+    return areaB - areaA; 
+  });
+}
+
