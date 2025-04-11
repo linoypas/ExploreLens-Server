@@ -7,6 +7,7 @@
     "start": "tsc && node ./dist/src/app.js",
     "test": "jest --detectOpenHandles --forceExit --runInBand",
     "testAuth": "jest --detectOpenHandles --forceExit --coverage test/auth.test.ts",
+    "testUser": "jest --detectOpenHandles --forceExit --coverage test/user.test.ts",
     "debug:site-detection": "ts-node ./src/test/scripts/testSiteDetection.ts"
   },
   "author": "",

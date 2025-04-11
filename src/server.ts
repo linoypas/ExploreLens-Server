@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import mongoose from "mongoose";
 import authRoute from "./routes/auth_route";
+import userRoute from "./routes/user_route";
 import siteInfoRoutes from './routes/siteInfo_route';
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
@@ -15,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/public", express.static("public"));
 app.use('/site-info', siteInfoRoutes);
 app.use("/auth", authRoute);
+app.use("/users", userRoute);
 
 const PORT = process.env.PORT || 3000;
 
