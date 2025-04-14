@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
-import siteInfoModel, { ISiteInfo } from "../models/siteInfoModel"
+import siteInfoModel, { ISiteInfo } from "../site-information/models/siteInfoModel"
 import { Request, Response } from 'express';
+import { findSiteInfoByName } from "../site-information/service/siteInfoService";
 
 export const createSiteInfo = async (req: Request, res: Response): Promise<void> => {
     const siteInfoBody = req.body;
@@ -17,11 +18,11 @@ export const getSiteInfoByName = async (req: Request, res: Response): Promise<vo
     const siteName = req.params.siteName;
 
     try {
-      const item = await siteInfoModel.find({name: siteName});
+      const item = await findSiteInfoByName(siteName);
       if (item != null) {
         res.json(item);
       } else {
-        res.status(404).json("item not found");
+        res.status(404).json("site not found");
       }
     } catch (error) {
       res.status(400).json(error);

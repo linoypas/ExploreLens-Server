@@ -3,7 +3,7 @@ const router = express.Router();
 
 import { upload } from '../middlewares/uploader';
 import { siteInformationController, mockSiteInformation } from '../controllers/siteDetectionController';
-import { getGptSiteDetails, getSiteGptMockDetails }  from '../controllers/siteDetailsController';
+import { getGptSiteDetails, getSiteGptMockDetails }  from '../controllers/gptSiteInfoController';
 
 /**
  * @swagger

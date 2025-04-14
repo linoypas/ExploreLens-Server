@@ -4,6 +4,7 @@ dotenv.config();
 import siteInfoRoutes from './routes/siteInfo_route';
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
+import mongoose from 'mongoose'
 
 const app = express();
 app.use(express.json());
@@ -29,8 +30,19 @@ const specs = swaggerJsDoc(options);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
 const initApp = () => {
-  return new Promise<Express>((resolve) => {
-    resolve(app);
+  return new Promise<Express>((resolve, reject) => {
+    if (!process.env.DB_CONNECT) {
+      reject("DB_CONNECT is not defined in .env file");
+    } else {
+      mongoose
+        .connect(process.env.DB_CONNECT)
+        .then(() => {
+          resolve(app);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    }
   });
 };
 
