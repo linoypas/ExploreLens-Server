@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import siteInfoModel, { ISiteInfo } from "../site-information/models/siteInfoModel"
+import siteInfoModel, { ISiteInfo } from "../site-information/models/siteInfo"
 import { Request, Response } from 'express';
-import { findSiteInfoByName, addSiteInfo} from "../site-information/service/siteInfoService";
+import { findSiteInfoByName, addSiteInfo} from "../site-information/service/siteInfo";
 
 export const createSiteInfo = async (req: Request, res: Response): Promise<void> => {
     const siteInfoBody = req.body;
