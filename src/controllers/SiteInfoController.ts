@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 import siteInfoModel, { ISiteInfo } from "../site-information/models/siteInfoModel"
 import { Request, Response } from 'express';
-import { findSiteInfoByName } from "../site-information/service/siteInfoService";
+import { findSiteInfoByName, addSiteInfo} from "../site-information/service/siteInfoService";
 
 export const createSiteInfo = async (req: Request, res: Response): Promise<void> => {
     const siteInfoBody = req.body;
     try {
-      const siteInfo = await siteInfoModel.create(siteInfoBody);
+      const siteInfo = await addSiteInfo(siteInfoBody);
       res.status(201).json(siteInfo);
     } catch (error) {
       console.log(error);

@@ -6,6 +6,10 @@ export const findSiteInfoByName = async (name: string): Promise<ISiteInfo | null
     return await siteInfoModel.findOne({ name });
   };
 
+export const addSiteInfo = async (body: any): Promise<ISiteInfo | null> => {
+  return await siteInfoModel.create(body);
+}
+
 export const siteDetails = async (siteName: string): Promise<String> => {
   const dbSiteInfo = await findSiteInfoByName(siteName);
   if (dbSiteInfo) {
@@ -14,5 +18,9 @@ export const siteDetails = async (siteName: string): Promise<String> => {
   }
   const providerData= await fetchSiteInfo(siteName);
   console.log(`from GPT: ${providerData}`)
+  addSiteInfo({
+    name: siteName,
+    description: providerData
+  })
   return providerData;
 }
