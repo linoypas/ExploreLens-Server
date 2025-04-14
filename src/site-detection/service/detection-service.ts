@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { BoundingBox } from '../models/detectedObjects';
-import { fetchLandmarkData } from '../providers/eden_ai/landmarkDetectionProvider';
+import { fetchLandmarkData } from '../providers/eden_ai/landmarkDetection_provider';
 import { RELEVANT_TAGS } from '../../constants/relevantTags';
-import { detectObjects } from '../providers/eden_ai/objectDetectionProvider';
+import { detectObjects } from '../providers/eden_ai/objectDetection_provider';
 import { DetectedObject, CroppedDetectedObject, DetectionResult } from '../models/detectedObjects';
 import { cropObjectsFromImage } from '../../utils/imageUtility';
 

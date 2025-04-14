@@ -1,4 +1,4 @@
-import { fetchLandmarkData } from "../../../site-detection/providers/eden_ai/landmarkDetectionProvider"; 
+import { fetchLandmarkData } from "../../../site-detection/providers/eden_ai/landmarkDetection_provider"; 
 
 const testImageUrl = "..\\KikarBialik.jpg"; 
 
