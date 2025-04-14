@@ -1,19 +1,15 @@
 import { Request, Response } from 'express';
-import { siteDetails } from "../site-information/service/siteInfoService";
+import { fetchSiteInfo } from '../site-information/providers/gpt/siteInfo';
 
 export const getGptSiteDetails = async (req: Request, res: Response): Promise<void> => {
-  const siteName = req.query.siteName as string; 
+    const siteName = req.query.siteName as string; 
+    console.log(`siteName : ${siteName}`);
   if (!siteName) {
-    res.status(400).json({ error: 'No site mentioned !' });
+    res.status(400).json({ error: 'No site mentioned' });
     return;
   }
-  try{
-    const dbSiteInfo = await siteDetails(siteName);
-    res.status(200).json(dbSiteInfo);
-  } catch (error) {
-    console.log(error)
-    res.status(400).json(error);
-  }
+  const result = await fetchSiteInfo(siteName);
+  res.status(200).json(result);
 };
 
 export const getSiteGptMockDetails = async (req: Request, res: Response): Promise<void> => {

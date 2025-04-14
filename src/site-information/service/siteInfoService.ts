@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { fetchSiteInfo } from '../../site-detection/providers/gpt/siteInfo';
+import { fetchSiteInfo } from '../providers/gpt/siteInfo';
 import siteInfoModel, { ISiteInfo } from "../models/siteInfoModel"
 
 export const findSiteInfoByName = async (name: string): Promise<ISiteInfo | null> => {

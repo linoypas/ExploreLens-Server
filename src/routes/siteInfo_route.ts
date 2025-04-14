@@ -2,8 +2,9 @@ import express from 'express';
 const router = express.Router();
 
 import { upload } from '../middlewares/uploader';
-import { siteInformationController, mockSiteInformation } from '../controllers/siteDetectionController';
-import { getGptSiteDetails, getSiteGptMockDetails }  from '../controllers/gptSiteInfoController';
+import { siteInformationController, mockSiteInformation } from '../controllers/siteDetection_controller';
+import { getGptSiteDetails, getSiteGptMockDetails }  from '../controllers/siteDetails_controller';
+
 
 /**
  * @swagger
