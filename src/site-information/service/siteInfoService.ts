@@ -10,17 +10,22 @@ export const addSiteInfo = async (body: any): Promise<ISiteInfo | null> => {
   return await siteInfoModel.create(body);
 }
 
-export const siteDetails = async (siteName: string): Promise<String> => {
-  const dbSiteInfo = await findSiteInfoByName(siteName);
-  if (dbSiteInfo) {
+export const siteDetails = async (siteName: string): Promise<String | null> => {
+  try{
+    const dbSiteInfo = await findSiteInfoByName(siteName);
+    if (dbSiteInfo) {
     console.log(`from DB: ${dbSiteInfo.description}`)
     return dbSiteInfo.description;
-  }
-  const providerData= await fetchSiteInfo(siteName);
-  console.log(`from GPT: ${providerData}`)
-  addSiteInfo({
+    }
+    const providerData= await fetchSiteInfo(siteName);
+    console.log(`from GPT: ${providerData}`)
+    addSiteInfo({
     name: siteName,
     description: providerData
-  })
-  return providerData;
+    })
+    return providerData;
+  } catch (error){
+    console.log(error)
+    return null;
+  }
 }
