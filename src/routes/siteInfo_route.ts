@@ -2,8 +2,9 @@ import express from 'express';
 const router = express.Router();
 
 import { upload } from '../middlewares/uploader';
-import { siteInformationController, mockSiteInformation } from '../controllers/siteDetectionController';
-import { getGptSiteDetails, getSiteGptMockDetails }  from '../controllers/siteDetailsController';
+import { siteInformationController, mockSiteInformation } from '../controllers/siteDetection_controller';
+import { getGptSiteDetails, getSiteGptMockDetails }  from '../controllers/siteDetails_controller';
+
 
 /**
  * @swagger
@@ -12,7 +13,7 @@ import { getGptSiteDetails, getSiteGptMockDetails }  from '../controllers/siteDe
  *     summary: Send mock data of famous sites in an uploaded image
  *     description: Send mock data of famous sites in an uploaded image.
  *     tags:
- *       - Site Mock Detection
+ *       - Site Detection
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -109,6 +110,8 @@ router.post('/detect-site', upload.single('image'), siteInformationController);
  *   get:
  *     summary: Get details of a site using GPT-4
  *     description: Fetch detailed information about a site by its name using GPT-4.
+ *     tags:
+ *      - Site Detection
  *     parameters:
  *       - in: query
  *         name: siteName
@@ -142,6 +145,8 @@ router.get('/site-details', getGptSiteDetails );
 *   get:
  *     summary: Get mock details of a site
  *     description: Fetch mock details about a site by its name (mock data).
+ *     tags:
+ *      - Site Detection
  *     parameters:
  *       - in: query
  *         name: siteName

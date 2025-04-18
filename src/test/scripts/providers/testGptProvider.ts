@@ -1,4 +1,4 @@
-import { fetchSiteInfo } from '../../../site-detection/providers/gpt/siteInfo_provider'
+import { fetchSiteInfo } from '../../../site-detection/providers/gpt/siteInfo'
 
 async function testFetchSiteInfo() {
   try {

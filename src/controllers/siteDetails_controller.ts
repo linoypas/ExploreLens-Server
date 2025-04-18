@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { fetchSiteInfo } from '../site-detection/providers/gpt/siteInfo_provider';
+import { fetchSiteInfo } from '../site-detection/providers/gpt/siteInfo';
 
 export const getGptSiteDetails = async (req: Request, res: Response): Promise<void> => {
     const siteName = req.query.siteName as string; 
