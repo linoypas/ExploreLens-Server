@@ -26,6 +26,6 @@ export interface BoundingBox {
       x: number;
       y: number;
       siteName: string;
-    }
+    };
   }
   
