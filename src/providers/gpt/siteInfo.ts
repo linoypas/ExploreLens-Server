@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import dotenv from 'dotenv';
-import { GptPromptForSystem, GptPromptForUser } from "../../../site-detection/providers/prompts";
+import { GptPromptForSystem, GptPromptForUser } from "../../site-detection/providers/prompts";
 
 dotenv.config();
 const openai = new OpenAI({

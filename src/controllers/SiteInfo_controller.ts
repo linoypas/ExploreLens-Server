@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import BaseController from "./base_controller"; 
-import { ISiteInfo } from "../site-information/models/siteInfo";
 import mongoose from "mongoose";
-import siteInfoModel from "../site-information/models/siteInfo";
+import { fetchSiteInfo } from '../providers/gpt/siteInfo';
+import siteInfoModel, { ISiteInfo } from "../models/siteInfo_model";
+
+
 
 class SiteInfoController extends BaseController<ISiteInfo> {
   constructor() {
@@ -40,14 +42,20 @@ class SiteInfoController extends BaseController<ISiteInfo> {
   }
 
   async getBySitename(req: Request, res: Response) {
-    const { siteName } = req.params;
-
+    const siteName = req.params.sitename;
+    console.log(siteName)
     try {
-      const user = await this.model.findOne({ siteName });
+      const user = await this.model.findOne({ name: siteName });
       if (user) {
         res.status(200).send(user);
       } else {
-        res.status(404).send({ error: "Site not found" });
+        const providerData= await fetchSiteInfo(siteName);
+        const newSiteInfo = await siteInfoModel.create({
+          name: siteName,
+          description: providerData,
+        });
+        console.log(newSiteInfo)
+        res.status(200).json(newSiteInfo); 
       }
     } catch (error) {
       console.error(error);
