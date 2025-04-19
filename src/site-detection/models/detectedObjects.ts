@@ -28,9 +28,4 @@ export interface BoundingBox {
       siteName: string;
     }
   }
-
-  export interface DescriptionResult {
-      status: 'success' | 'failure' ;
-      content: string;
-  }
   

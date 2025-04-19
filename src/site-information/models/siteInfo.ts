@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 export interface ISiteInfo {
-    siteId: mongoose.Schema.Types.ObjectId;
+    siteId: string;
     name: string;
     description: string;
 }

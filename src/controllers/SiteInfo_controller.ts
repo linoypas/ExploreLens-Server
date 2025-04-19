@@ -1,78 +1,89 @@
+import { Request, Response } from "express";
+import BaseController from "./base_controller"; 
+import { ISiteInfo } from "../site-information/models/siteInfo";
 import mongoose from "mongoose";
-import siteInfoModel, { ISiteInfo } from "../site-information/models/siteInfo"
-import { Request, Response } from 'express';
-import { findSiteInfoByName, addSiteInfo} from "../site-information/service/siteInfo";
+import siteInfoModel from "../site-information/models/siteInfo";
 
-export const createSiteInfo = async (req: Request, res: Response): Promise<void> => {
-    const siteInfoBody = req.body;
+class SiteInfoController extends BaseController<ISiteInfo> {
+  constructor() {
+    super(siteInfoModel);
+  }
+
+  async getAll(req: Request, res: Response) {
     try {
-      const siteInfo = await addSiteInfo(siteInfoBody);
-      res.status(201).json(siteInfo);
+      const items = await this.model.find();
+      res.send(items);
     } catch (error) {
-      console.log(error);
-      res.status(400).json(error);
-    }
-}
-
-export const getSiteInfoByName = async (req: Request, res: Response): Promise<void> => {
-    const siteName = req.params.siteName;
-
-    try {
-      const item = await findSiteInfoByName(siteName);
-      if (item != null) {
-        res.json(item);
-      } else {
-        res.status(404).json("site not found");
-      }
-    } catch (error) {
-      res.status(400).json(error);
+      res.status(400).send(error);
     }
   }
 
-export const getAllSiteInfo = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const items = await siteInfoModel.find();
-          res.send(items);
-    } catch (error) {
-        res.status(400).send(error);
+  async getById(req: Request, res: Response) {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400).send({ error: "Invalid user ID format" });
+      return;
     }
- }
 
-// Update
-export const updateSiteInfo = async (req: Request, res: Response): Promise<void> => {
-    const itemBody = req.body;
-    const itemId = req.params.id;
     try {
-      const item = await siteInfoModel.findById(itemId);
-
-      if (item != null) {
-        for (const key in itemBody) {
-          if (itemBody.hasOwnProperty(key)) {
-            if (key in item) {
-              (item as ISiteInfo)[key as keyof ISiteInfo] = itemBody[key]; 
-            }
-          }
-        }
-
-        await item.save();
-        res.status(200).send(item);
+      const user = await this.model.findById(id);
+      if (user) {
+        res.status(200).send(user);
       } else {
-          res.status(404).send("item not found");
-      }   
+        res.status(404).send({ error: "User not found" });
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      res.status(500).send({ error: "Server error" });
+    }
+  }
+
+  async getBySitename(req: Request, res: Response) {
+    const { siteName } = req.params;
+
+    try {
+      const user = await this.model.findOne({ siteName });
+      if (user) {
+        res.status(200).send(user);
+      } else {
+        res.status(404).send({ error: "Site not found" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ error: "Server error" });
+    }
+  }
+
+  async update(req: Request, res: Response) {
+    const id = req.params.id;
+    const { username, profilePicture } = req.body;
+
+    if (username) {
+      const existingUser = await this.model.findOne({ username, _id: { $ne: id } });
+      if (existingUser) {
+        res.status(400).send({ error: "Username is already taken" });
+        return;
+      }
+    }
+
+    try {
+      const updatedUser = await this.model.findByIdAndUpdate(
+        id,
+        { username, profilePicture },
+        { new: true, runValidators: true }
+      );
+
+      if (updatedUser) {
+        res.status(200).send(updatedUser);
+      } else {
+        res.status(404).send("User not found");
+      }
+    } catch (error) {
+      console.error(error);
       res.status(400).send(error);
     }
+  }
 }
 
-
-// Delete
-export const deleteSiteInfo = async (req: Request, res: Response) : Promise<void> => {
-    const itemId = req.params.id;
-    try {
-      const rs = await siteInfoModel.findByIdAndDelete(itemId);
-      res.status(200).json(rs);
-    } catch (error) {
-      res.status(400).json(error);
-    }
-}
+export default new SiteInfoController();
