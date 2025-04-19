@@ -12,7 +12,6 @@ export interface ISiteInfo {
     description: string;
     averageRating: number;
     ratingCount: number;
-    totalRating: number;
     comments: IComment[];
 }
 
@@ -30,7 +29,6 @@ const siteInfo = new Schema<ISiteInfo>({
   description: { type: String, required: true },
   averageRating: { type: Number, default: 0 },
   ratingCount: { type: Number, default: 0 },
-  totalRating: { type: Number, default: 0 },
   comments: [commentSchema]
 });
 

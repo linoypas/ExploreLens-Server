@@ -54,7 +54,6 @@ class SiteInfoController extends BaseController<ISiteInfo> {
           name: siteName,
           description: providerData,
         });
-        console.log(newSiteInfo)
         res.status(200).json(newSiteInfo); 
       }
     } catch (error) {
@@ -65,7 +64,7 @@ class SiteInfoController extends BaseController<ISiteInfo> {
 
   async update(req: Request, res: Response) : Promise<void> {
     const id = req.params.id;
-    const { comments, rating } = req.body; // comment is always required, rating is optional
+    const { comments, rating } = req.body; 
   
     try {
       const siteInfo = await this.model.findById(id);
