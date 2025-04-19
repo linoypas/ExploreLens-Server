@@ -24,16 +24,16 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      res.status(400).send({ error: "Invalid user ID format" });
+      res.status(400).send({ error: "Invalid siteInfo ID format" });
       return;
     }
 
     try {
-      const user = await this.model.findById(id);
-      if (user) {
-        res.status(200).send(user);
+      const siteInfo = await this.model.findById(id);
+      if (siteInfo) {
+        res.status(200).send(siteInfo);
       } else {
-        res.status(404).send({ error: "User not found" });
+        res.status(404).send({ error: "siteInfo not found" });
       }
     } catch (error) {
       console.error(error);
@@ -45,9 +45,9 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     const siteName = req.params.sitename;
     console.log(siteName)
     try {
-      const user = await this.model.findOne({ name: siteName });
-      if (user) {
-        res.status(200).send(user);
+      const siteInfo = await this.model.findOne({ name: siteName });
+      if (siteInfo) {
+        res.status(200).send(siteInfo);
       } else {
         const providerData= await fetchSiteInfo(siteName);
         const newSiteInfo = await siteInfoModel.create({
@@ -63,35 +63,35 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response) : Promise<void> {
     const id = req.params.id;
-    const { username, profilePicture } = req.body;
-
-    if (username) {
-      const existingUser = await this.model.findOne({ username, _id: { $ne: id } });
-      if (existingUser) {
-        res.status(400).send({ error: "Username is already taken" });
+    const { comments, rating } = req.body; // comment is always required, rating is optional
+  
+    try {
+      const siteInfo = await this.model.findById(id);
+      if (!siteInfo) {
+        res.status(404).send("SiteInfo not found");
         return;
       }
-    }
-
-    try {
-      const updatedUser = await this.model.findByIdAndUpdate(
-        id,
-        { username, profilePicture },
-        { new: true, runValidators: true }
-      );
-
-      if (updatedUser) {
-        res.status(200).send(updatedUser);
-      } else {
-        res.status(404).send("User not found");
+  
+      if (rating) {
+        const newTotalRating = siteInfo.averageRating * siteInfo.ratingCount + rating;
+        siteInfo.ratingCount += 1;
+        siteInfo.averageRating = parseFloat((newTotalRating / siteInfo.ratingCount).toFixed(2));
       }
-    } catch (error) {
+  
+      if (comments) {
+        siteInfo.comments = comments;
+      }
+  
+      await siteInfo.save();
+      res.status(200).send(siteInfo);
+  
+      } catch (error) {
       console.error(error);
       res.status(400).send(error);
+      }
     }
   }
-}
 
 export default new SiteInfoController();
