@@ -26,97 +26,83 @@ type User = IUser & {
 };
 
 const testUser: User = {
-  username: "test1",
   email: "test@user.com",
   password: "testpassword",
-  profilePicture: ""
+  profilePicture: "",
+  username: "test1" 
 };
 
 describe("Auth Tests", () => {
-  test("Auth test register", async () => {
-    const response = await request(app)
-      .post(baseUrl + "/register")
-      .send(testUser);
-    expect(response.statusCode).toBe(200);
-  });
-
-  test("Auth test register fail registe 2 times", async () => {
-    const response = await request(app)
-      .post(baseUrl + "/register")
-      .send(testUser);
-    expect(response.statusCode).not.toBe(200);
-  });
-
-  test("Auth test register fail", async () => {
+  test("Register and return tokens", async () => {
     const response = await request(app)
       .post(baseUrl + "/register")
       .send({
-        email: "lalala",
+        name: "test1",
+        email: testUser.email,
+        password: testUser.password,
+        profilePicture: testUser.profilePicture
       });
-    expect(response.statusCode).not.toBe(200);
-    const response2 = await request(app)
-      .post(baseUrl + "/register")
-      .send({
-        email: "",
-        password: "lalala",
-      });
-    expect(response2.statusCode).not.toBe(200);
-  });
-
-  test("Auth test login get token chek", async () => {
-    const response = await request(app)
-      .post(baseUrl + "/login")
-      .send(testUser);
     expect(response.statusCode).toBe(200);
-    const accessToken = response.body.accessToken;
-    const refreshToken = response.body.refreshToken;
-    expect(accessToken).toBeDefined();
-    expect(refreshToken).toBeDefined();
+    expect(response.body.accessToken).toBeDefined();
+    expect(response.body.refreshToken).toBeDefined();
     expect(response.body._id).toBeDefined();
-    testUser.accessToken = accessToken;
-    testUser.refreshToken = refreshToken;
+    testUser.accessToken = response.body.accessToken;
+    testUser.refreshToken = response.body.refreshToken;
     testUser._id = response.body._id;
   });
 
-  test("Check access and refresh token  are not the same", async () => {
+  test("Fail duplicate register", async () => {
     const response = await request(app)
-      .post(baseUrl + "/login")
-      .send(testUser);
-    const accessToken = response.body.accessToken;
-    const refreshToken = response.body.refreshToken;
-
-    expect(accessToken).not.toBe(testUser.accessToken);
-    expect(refreshToken).not.toBe(testUser.refreshToken);
+      .post(baseUrl + "/register")
+      .send({
+        name: "test1",
+        email: testUser.email,
+        password: testUser.password,
+        profilePicture: testUser.profilePicture
+      });
+    expect(response.statusCode).toBe(409);
   });
 
-  test("Auth test login fail", async () => {
+  test("Fail invalid register data", async () => {
+    const cases = [
+      { email: "", name: "", password: "" },
+      { email: "", name: "user", password: "pass" },
+      { email: "user@example.com", name: "", password: "pass" },
+      { email: "user@example.com", name: "user", password: "" }
+    ];
+    for (const data of cases) {
+      const res = await request(app).post(baseUrl + "/register").send(data);
+      expect(res.statusCode).toBe(400);
+    }
+  });
+
+  test("Login and receive tokens", async () => {
     const response = await request(app)
       .post(baseUrl + "/login")
       .send({
         email: testUser.email,
-        password: "elelel",
-        username: testUser.username,
-        posts: [],
+        password: testUser.password
       });
-    expect(response.statusCode).not.toBe(200);
-
-    const response2 = await request(app)
-      .post(baseUrl + "/login")
-      .send({
-        username: "test2",
-        posts: [],
-        email: "dsfasd",
-        password: "sdfsd",
-      });
-    expect(response2.statusCode).not.toBe(200);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.accessToken).toBeDefined();
+    expect(response.body.refreshToken).toBeDefined();
+    expect(response.body._id).toBeDefined();
+    testUser.accessToken = response.body.accessToken;
+    testUser.refreshToken = response.body.refreshToken;
   });
 
-  test("Test refresh token", async () => {
+  test("Login fail - wrong credentials", async () => {
+    const response = await request(app).post(baseUrl + "/login").send({
+      email: testUser.email,
+      password: "wrongPassword"
+    });
+    expect(response.statusCode).toBe(400);
+  });
+
+  test("Refresh token flow", async () => {
     const response = await request(app)
       .post(baseUrl + "/refresh")
-      .send({
-        refreshToken: testUser.refreshToken,
-      });
+      .send({ refreshToken: testUser.refreshToken });
     expect(response.statusCode).toBe(200);
     expect(response.body.accessToken).toBeDefined();
     expect(response.body.refreshToken).toBeDefined();
@@ -124,34 +110,36 @@ describe("Auth Tests", () => {
     testUser.refreshToken = response.body.refreshToken;
   });
 
-  jest.setTimeout(10000);
-  test("Test timeout token ", async () => {
+  let staleToken: string; 
+
+  test("Logout with refresh token", async () => {
+    staleToken = testUser.refreshToken!; 
     const response = await request(app)
-      .post(baseUrl + "/login")
-      .send(testUser);
+      .post(baseUrl + "/logout")
+      .send({ refreshToken: staleToken });
     expect(response.statusCode).toBe(200);
-    testUser.accessToken = response.body.accessToken;
-    testUser.refreshToken = response.body.refreshToken;
-
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-
-    const response2 = await request(app)
-      .post("/posts")
-      .set({ authorization: "JWT " + testUser.accessToken })
-      .send({
-        title: "Test Post",
-        content: "Test Content",
-        owner: "sdfSd",
-      });
-    expect(response2.statusCode).not.toBe(201);
-
-    const response3 = await request(app)
+  });
+  
+  test("Refresh fails after logout", async () => {
+    const response = await request(app)
       .post(baseUrl + "/refresh")
-      .send({
-        refreshToken: testUser.refreshToken,
-      });
-    expect(response3.statusCode).toBe(200);
-    testUser.accessToken = response3.body.accessToken;
+      .send({ refreshToken: staleToken }); 
+    expect(response.statusCode).not.toBe(200);
+  });
+  
 
+  test("Forgot password returns token", async () => {
+    const response = await request(app)
+      .post(baseUrl + "/forgot")
+      .send({ email: testUser.email });
+    expect(response.statusCode).toBe(200);
+    expect(response.body.resetToken).toBeDefined();
+  });
+
+  test("Forgot password invalid email", async () => {
+    const response = await request(app)
+      .post(baseUrl + "/forgot")
+      .send({ email: "notexist@none.com" });
+    expect(response.statusCode).toBe(404);
   });
 });
