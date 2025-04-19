@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { siteDetails } from '../site-information/service/siteInfo';
+import { getSiteDetails } from '../site-information/service/siteInfo';
 
 export const getGptSiteDetails = async (req: Request, res: Response): Promise<void> => {
     const siteName = req.query.siteName as string; 
   if (!siteName) {
     res.status(400).json({ error: 'No site mentioned' });
   }
-  const result = await siteDetails(siteName);
+  const result = await getSiteDetails(siteName);
   res.status(200).json(result);
 };
 

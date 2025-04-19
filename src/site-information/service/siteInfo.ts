@@ -10,7 +10,7 @@ export const addSiteInfo = async (body: any): Promise<ISiteInfo | null> => {
   return await siteInfoModel.create(body);
 }
 
-export const siteDetails = async (siteName: string): Promise<String | null> => {
+export const getSiteDetails = async (siteName: string): Promise<String | null> => {
   try{
     const dbSiteInfo = await findSiteInfoByName(siteName);
     if (dbSiteInfo) {
