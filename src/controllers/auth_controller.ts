@@ -77,42 +77,50 @@ const googleSignin = async (req: Request, res: Response): Promise<void> => {
 }
 
 const register = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { profilePicture, email, username, password } = req.body;
-
-    if (!email || !username || !password) {
-        const message =  'Missing required fields';
-        console.log(`error: ${message}`)
-        res.status(400).json({ message: message });
+    try {
+      const { profilePicture, email, name, password } = req.body;
+  
+      if (!email || !name || !password) {
+        res.status(400).json({ message: 'Missing required fields' });
         return;
-    }
-
-    const user = await UserModel.findOne({ username: username });
-    if (user) {
-        const message = 'User already exists';
-        console.log(`error: ${message}`)
-        res.status(409).json({ message: message });
+      }
+  
+      const existingEmail = await UserModel.findOne({ email });
+      if (existingEmail) {
+        res.status(409).json({ message: 'Email already in use' });
         return;
+      }
+  
+      const uniqueUsername = await generateUsernameWithSuffix(name);
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      const newUser = await UserModel.create({
+        email,
+        username: uniqueUsername,
+        password: hashedPassword,
+        profilePicture,
+      });
+  
+      const tokens = generateToken(newUser._id);
+      if (!tokens) {
+        res.status(500).json({ message: 'Token generation failed' });
+        return;
+      }
+  
+      newUser.refreshToken = newUser.refreshToken || [];
+      newUser.refreshToken.push(tokens.refreshToken);
+      await newUser.save();
+  
+      res.status(200).json({
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        _id: newUser._id,
+      });
+    } catch (err) {
+      console.error('Error during registration:', err);
+      res.status(500).json({ message: 'Error during registration' });
     }
-
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const newUser = await UserModel.create({
-      email,
-      username,
-      password: hashedPassword,
-      profilePicture
-    });
-
-    res.status(200).json(newUser); 
-  } catch (err) {
-    const message = 'Error during registration';
-    console.error(`error: ${message}`)
-    res.status(500).json({ message: message });
-  }
-};
-
+  };
 
 type tTokens = {
     accessToken: string,
@@ -144,44 +152,75 @@ const generateToken = (userId: string): tTokens | null => {
     };
 };
 
-
 const login = async (req: Request, res: Response) => {
     try {
-        const user = await UserModel.findOne({ username: req.body.username });
-        if (!user) {
-            res.status(400).send('wrong username or password');
-            return;
-        }
-        const validPassword = await bcrypt.compare(req.body.password, user.password);
-        if (!validPassword) {
-            res.status(400).send('wrong username or password');
-            return;
-        }
-        if (!process.env.TOKEN_SECRET) {
-            res.status(500).send('Server Error');
-            return;
-        }
-        // generate token
-        const tokens = generateToken(user._id);
-        if (!tokens) {
-            res.status(500).send('Server Error');
-            return;
-        }
-        if (!user.refreshToken) {
-            user.refreshToken = [];
-        }
-        user.refreshToken.push(tokens.refreshToken);
-        await user.save();
-        res.status(200).send(
-            {
-                accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken,
-                _id: user._id
-            });
-
+      const { email, password } = req.body;
+  
+      const user = await UserModel.findOne({ email });
+      if (!user) {
+        res.status(400).send('Wrong email or password');
+        return;
+      }
+  
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        res.status(400).send('Wrong email or password');
+        return;
+      }
+  
+      const tokens = generateToken(user._id);
+      if (!tokens) {
+        res.status(500).send('Server Error');
+        return;
+      }
+  
+      user.refreshToken = user.refreshToken || [];
+      user.refreshToken.push(tokens.refreshToken);
+      await user.save();
+  
+      res.status(200).send({
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        _id: user._id,
+      });
     } catch (err) {
-        res.status(400).send(err);
+      res.status(400).send(err);
     }
+  };
+
+const forgotPassword = async (req: Request, res: Response) => {
+const { email } = req.body;
+try {
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+    res.status(404).json({ message: 'User not found' });
+    return;
+    }
+
+    const resetToken = jwt.sign(
+    { _id: user._id },
+    process.env.TOKEN_SECRET as string,
+    { expiresIn: '15m' }
+    );
+
+    res.status(200).json({ message: 'Token generated', resetToken });
+} catch (error) {
+    console.error('Error generating password reset token:', error);
+    res.status(500).json({ message: 'Server error' });
+}
+};
+  
+const resetPassword = async (req: Request, res: Response) => {
+const { token, newPassword } = req.body;
+try {
+    const payload = jwt.verify(token, process.env.TOKEN_SECRET as string) as { _id: string };
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await UserModel.findByIdAndUpdate(payload._id, { password: hashed });
+    res.status(200).json({ message: 'Password updated successfully' });
+} catch (err) {
+    console.error('Reset error:', err);
+    res.status(400).json({ message: 'Invalid or expired token' });
+}
 };
 
 type tUser = Document<unknown, {}, IUser> & IUser & Required<{
@@ -213,7 +252,7 @@ const verifyRefreshToken = async (refreshToken: string | undefined) => {
 
             try {
                 const user = await UserModel.findById(userId);
-                if (!user) {
+                if (!user || !user.refreshToken?.includes(refreshToken)) {
                     reject("fail");
                     return;
                 }
@@ -242,13 +281,18 @@ const verifyRefreshToken = async (refreshToken: string | undefined) => {
 
 const logout = async (req: Request, res: Response) => {
     try {
-        const user = await verifyRefreshToken(req.body.refreshToken);
-        await user.save();
-        res.status(200).send("success");
+      const refreshToken = req.body.refreshToken;
+      const user = await verifyRefreshToken(refreshToken);
+  
+      user.refreshToken = user.refreshToken?.filter(t => t !== refreshToken);
+      await user.save();
+  
+      res.status(200).send("success");
     } catch (err) {
-        res.status(400).send("fail");
+      res.status(400).send("fail");
     }
-};
+  };
+  
 
 const refresh = async (req: Request, res: Response) => {
     try {
@@ -312,5 +356,7 @@ export default {
     login,
     refresh,
     logout,
-    googleSignin
+    googleSignin,
+    forgotPassword,
+    resetPassword,
 };

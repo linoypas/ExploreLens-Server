@@ -2,7 +2,6 @@ import express from "express";
 const router = express.Router();
 import authController from "../controllers/auth_controller";
 
-
 /**
 * @swagger
 * tags:
@@ -20,13 +19,11 @@ import authController from "../controllers/auth_controller";
 *       bearerFormat: JWT
 */
 
-
-
 /**
 * @swagger
 * /auth/register:
 *   post:
-*     summary: registers a new user
+*     summary: Registers a new user and returns tokens
 *     tags: [Auth]
 *     requestBody:
 *       required: true
@@ -35,28 +32,33 @@ import authController from "../controllers/auth_controller";
 *           schema:
 *             type: object
 *             properties:
-*               username:
+*               name:
 *                 type: string
-*                 description: The username of the user
 *               email:
 *                 type: string
-*                 description: The email of the user
 *               password:
 *                 type: string
-*                 description: The password of the user
+*               profilePicture:
+*                 type: string
 *             required:
-*               - username
+*               - name
 *               - email
 *               - password
 *     responses:
 *       200:
-*         description: The new user
+*         description: User created and logged in
 *         content:
 *           application/json:
 *             schema:
-*               $ref: '#/components/schemas/User'
+*               type: object
+*               properties:
+*                 accessToken:
+*                   type: string
+*                 refreshToken:
+*                   type: string
+*                 _id:
+*                   type: string
 */
-
 router.post("/register", authController.register);
 
 /**
@@ -64,9 +66,7 @@ router.post("/register", authController.register);
  * /auth/login:
  *   post:
  *     summary: User login
- *     description: Authenticate user and return tokens
- *     tags:
- *       - Auth
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
@@ -74,14 +74,12 @@ router.post("/register", authController.register);
  *           schema:
  *             type: object
  *             properties:
- *               username:
+ *               email:
  *                 type: string
- *                 description: The username of the user
  *               password:
  *                 type: string
- *                 description: The password of the user
  *             required:
- *               - username
+ *               - email
  *               - password
  *     responses:
  *       200:
@@ -93,17 +91,10 @@ router.post("/register", authController.register);
  *               properties:
  *                 accessToken:
  *                   type: string
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *                 refreshToken:
  *                   type: string
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *                 _id:
  *                   type: string
- *                   example: 60d0fe4f5311236168a109ca
- *       400:
- *         description: Invalid credentials or request
- *       500:
- *         description: Server error
  */
 router.post("/login", authController.login);
 
@@ -111,10 +102,8 @@ router.post("/login", authController.login);
  * @swagger
  * /auth/google:
  *   post:
- *     summary: User login usign google
- *     description: Authenticate user usign google and return tokens
- *     tags:
- *       - Auth
+ *     summary: User login using Google
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
@@ -122,34 +111,16 @@ router.post("/login", authController.login);
  *           schema:
  *             type: object
  *             properties:
- *               credentials:
+ *               credential:
  *                 type: string
- *                 description: credentials from google
- *             required:
- *               - credentials
  *     responses:
  *       200:
  *         description: Successful login
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 accessToken:
- *                   type: string
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- *                 refreshToken:
- *                   type: string
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- *                 _id:
- *                   type: string
- *                   example: 60d0fe4f5311236168a109ca
  *       400:
  *         description: Invalid credentials or request
  *       500:
  *         description: Server error
  */
-
 router.post("/google", authController.googleSignin);
 
 /**
@@ -169,21 +140,9 @@ router.post("/google", authController.googleSignin);
  *             properties:
  *               refreshToken:
  *                 type: string
- *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *     responses:
  *       200:
  *         description: Tokens refreshed successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 accessToken:
- *                   type: string
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- *                 refreshToken:
- *                   type: string
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *       400:
  *         description: Invalid refresh token
  *       500:
@@ -208,7 +167,6 @@ router.post("/refresh", authController.refresh);
  *             properties:
  *               refreshToken:
  *                 type: string
- *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *     responses:
  *       200:
  *         description: Successful logout
@@ -219,5 +177,52 @@ router.post("/refresh", authController.refresh);
  */
 router.post("/logout", authController.logout);
 
+/**
+ * @swagger
+ * /auth/forgot:
+ *   post:
+ *     summary: Generate password reset token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Reset token generated
+ *       404:
+ *         description: User not found
+ */
+router.post("/forgot", authController.forgotPassword);
+
+/**
+ * @swagger
+ * /auth/reset:
+ *   post:
+ *     summary: Reset password using token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password updated
+ *       400:
+ *         description: Invalid or expired token
+ */
+router.post("/reset", authController.resetPassword);
 
 export default router;
