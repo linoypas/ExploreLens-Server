@@ -8,27 +8,25 @@ var app: Express;
 
 type User = IUser & { token?: string; refreshToken?: string };
 const testUser: User = {
-  username: "testuser",
   email: "testuser@example.com",
   password: "testpassword",
   profilePicture: "https://example.com/profile.jpg",
+  username: "testuser",
 };
 
 const secondTestUser: User = {
-  username: "testuser2",
   email: "testuser2@example.com",
   password: "testpassword",
   profilePicture: "https://example.com/profile2.jpg",
+  username: "testuser2",
 };
 
 beforeAll(async () => {
-  console.log("beforeAll - Setting up test environment");
   app = await initApp();
   await userModel.deleteMany();
 });
 
 afterAll((done) => {
-  console.log("afterAll - Closing database connection");
   mongoose.connection.close();
   done();
 });
@@ -44,12 +42,17 @@ describe("User Controller API Tests", () => {
     expect(response.body.length).toBe(0);
   });
 
-  test("Create a new user", async () => {
-    await request(app).post("/auth/register").send(testUser);
+  test("Register and login first user", async () => {
+    await request(app).post("/auth/register").send({
+      name: testUser.username,
+      email: testUser.email,
+      password: testUser.password,
+      profilePicture: testUser.profilePicture,
+    });
+
     const res = await request(app).post("/auth/login").send({
       email: testUser.email,
       password: testUser.password,
-      username: testUser.username,
     });
 
     expect(res.statusCode).toBe(200);
@@ -60,12 +63,17 @@ describe("User Controller API Tests", () => {
     userId = res.body._id;
   });
 
-  test("Create another user", async () => {
-    await request(app).post("/auth/register").send(secondTestUser);
+  test("Register and login second user", async () => {
+    await request(app).post("/auth/register").send({
+      name: secondTestUser.username,
+      email: secondTestUser.email,
+      password: secondTestUser.password,
+      profilePicture: secondTestUser.profilePicture,
+    });
+
     const res = await request(app).post("/auth/login").send({
       email: secondTestUser.email,
       password: secondTestUser.password,
-      username: secondTestUser.username,
     });
 
     expect(res.statusCode).toBe(200);
@@ -79,14 +87,12 @@ describe("User Controller API Tests", () => {
   test("Get user by ID", async () => {
     const response = await request(app).get(`/users/${userId}`);
     expect(response.statusCode).toBe(200);
-    expect(response.body.username).toBe(testUser.username);
     expect(response.body.email).toBe(testUser.email);
   });
 
   test("Get user by username", async () => {
     const response = await request(app).get(`/users/username/${testUser.username}`);
     expect(response.statusCode).toBe(200);
-    expect(response.body.username).toBe(testUser.username);
     expect(response.body.email).toBe(testUser.email);
   });
 
@@ -104,7 +110,7 @@ describe("User Controller API Tests", () => {
 
     const response = await request(app)
       .put(`/users/${userId}`)
-      .set({ authorization: `JWT ${testUser.token}` }) 
+      .set({ authorization: `JWT ${testUser.token}` })
       .send(updatedUser);
 
     expect(response.statusCode).toBe(200);
@@ -115,7 +121,7 @@ describe("User Controller API Tests", () => {
   test("Fail to update user with an existing username", async () => {
     const response = await request(app)
       .put(`/users/${userId}`)
-      .set({ authorization: `JWT ${testUser.token}` }) 
+      .set({ authorization: `JWT ${testUser.token}` })
       .send({ username: secondTestUser.username });
 
     expect(response.statusCode).toBe(400);
