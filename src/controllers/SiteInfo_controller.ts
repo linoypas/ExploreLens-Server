@@ -24,16 +24,16 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      res.status(400).send({ error: "Invalid user ID format" });
+      res.status(400).send({ error: "Invalid siteInfo ID format" });
       return;
     }
 
     try {
-      const user = await this.model.findById(id);
-      if (user) {
-        res.status(200).send(user);
+      const siteInfo = await this.model.findById(id);
+      if (siteInfo) {
+        res.status(200).send(siteInfo);
       } else {
-        res.status(404).send({ error: "User not found" });
+        res.status(404).send({ error: "siteInfo not found" });
       }
     } catch (error) {
       console.error(error);
@@ -45,9 +45,9 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     const siteName = req.params.sitename;
     console.log(siteName)
     try {
-      const user = await this.model.findOne({ name: siteName });
-      if (user) {
-        res.status(200).send(user);
+      const siteInfo = await this.model.findOne({ name: siteName });
+      if (siteInfo) {
+        res.status(200).send(siteInfo);
       } else {
         const providerData= await fetchSiteInfo(siteName);
         const newSiteInfo = await siteInfoModel.create({
@@ -60,36 +60,6 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     } catch (error) {
       console.error(error);
       res.status(500).send({ error: "Server error" });
-    }
-  }
-
-  async update(req: Request, res: Response) {
-    const id = req.params.id;
-    const { username, profilePicture } = req.body;
-
-    if (username) {
-      const existingUser = await this.model.findOne({ username, _id: { $ne: id } });
-      if (existingUser) {
-        res.status(400).send({ error: "Username is already taken" });
-        return;
-      }
-    }
-
-    try {
-      const updatedUser = await this.model.findByIdAndUpdate(
-        id,
-        { username, profilePicture },
-        { new: true, runValidators: true }
-      );
-
-      if (updatedUser) {
-        res.status(200).send(updatedUser);
-      } else {
-        res.status(404).send("User not found");
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(400).send(error);
     }
   }
 }
