@@ -80,8 +80,8 @@ class SiteInfoController extends BaseController<ISiteInfo> {
       }
   
       if (comments) {
-        siteInfo.comments = comments;
-      }
+        const newComments = Array.isArray(comments) ? comments : [comments];
+        siteInfo.comments.push(...newComments);      }
   
       await siteInfo.save();
       res.status(200).send(siteInfo);
