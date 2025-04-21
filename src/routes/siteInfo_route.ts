@@ -1,7 +1,17 @@
+/**
+ * @file siteInfo_route.ts
+ * @description Defines the siteInfo routes for the ExploreLens server.
+ */
+
 import express from "express";
 import siteInfoController from "../controllers/siteInfo_controller";
 
 const router = express.Router();
+
+/**
+ * @file siteInfo_route.ts
+ * @description Defines the siteInfo routes for the ExploreLens server.
+ */
 
 /**
  * @swagger
@@ -12,28 +22,58 @@ const router = express.Router();
 
 /**
  * @swagger
- * /siteInfo/siteInfoname/{siteInfoname}:
+ * /siteInfo/sitename/{sitename}:
  *   get:
- *     summary: Get a siteInfo by siteInfoname
- *     description: Retrieve a siteInfo by their siteInfoname
- *     tags:
- *       - siteInfo
+ *     summary: Get a siteInfo by name or fetch and create it if not found
+ *     tags: [siteInfo]
  *     parameters:
  *       - in: path
- *         name: siteInfoname
+ *         name: sitename
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: The siteInfoname of the siteInfo
+ *         description: The name of the site to retrieve or fetch info for
  *     responses:
  *       200:
- *         description: The siteInfo object
+ *         description: Returns the existing or newly created siteInfo
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/siteInfo'
- *       404:
- *         description: siteInfo not found
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: MongoDB ObjectId of the siteInfo
+ *                 name:
+ *                   type: string
+ *                   description: The name of the site
+ *                 description:
+ *                   type: string
+ *                   description: A description of the site
+ *                 averageRating:
+ *                   type: number
+ *                   description: Average rating for the site
+ *                   example: 4.5
+ *                 ratingCount:
+ *                   type: number
+ *                   description: Number of ratings the site has received
+ *                   example: 10
+ *                 comments:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       user:
+ *                         type: string
+ *                         description: User who left the comment
+ *                       content:
+ *                         type: string
+ *                         description: Comment content
+ *                       date:
+ *                         type: string
+ *                         format: date
+ *                         description: Date of the comment
+ *                   description: List of comments for the site
  *       500:
  *         description: Server error
  */
@@ -41,48 +81,53 @@ router.get("/sitename/:sitename", siteInfoController.getBySitename.bind(siteInfo
 
 /**
  * @swagger
- * components:
- *   schemas:
- *     siteInfo:
- *       type: object
- *       required:
- *         - site name
- *       properties:
- *         _id:
- *           type: string
- *           description: The auto-generated ID of the siteInfo
- *         description:
- *           type: string
- *           description: The description of the site
- *         comments:
- *           type: string
- *           description: The comments on the site
- *         rate:
- *           type: string
- *           description: rate of the site 
- *       example:
- *         _id: 60d0fe4f5311236168a109ca
- *         siteInfoname: eiffel towert
- *         description: The Eiffel Tower is a world-famous iron lattice tower located in Paris, France. Built by engineer Gustave Eiffel for the 1889 World's Fair, it stands 330 meters (1,083 feet) tall and was the tallest structure in the world until 1930. Today, it's one of the most iconic landmarks in the world and a symbol of France, attracting millions of visitors every year.
- *         comments:
- */
-
-/**
- * @swagger
  * /siteInfo:
  *   get:
- *     summary: Get all siteInfo
- *     description: Retrieve a list of all siteInfo
+ *     summary: Get all siteInfo documents
  *     tags: [siteInfo]
  *     responses:
  *       200:
- *         description: A list of siteInfo
+ *         description: List of all siteInfo
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/siteInfo'
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: MongoDB ObjectId of the siteInfo
+ *                   name:
+ *                     type: string
+ *                     description: The name of the site
+ *                   description:
+ *                     type: string
+ *                     description: A description of the site
+ *                   averageRating:
+ *                     type: number
+ *                     description: Average rating for the site
+ *                     example: 4.5
+ *                   ratingCount:
+ *                     type: number
+ *                     description: Number of ratings the site has received
+ *                     example: 10
+ *                   comments:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         user:
+ *                           type: string
+ *                           description: User who left the comment
+ *                         content:
+ *                           type: string
+ *                           description: Comment content
+ *                         date:
+ *                           type: string
+ *                           format: date
+ *                           description: Date of the comment
+ *                     description: List of comments for the site
  *       500:
  *         description: Server error
  */
@@ -93,24 +138,57 @@ router.get("/", siteInfoController.getAll.bind(siteInfoController));
  * /siteInfo/{id}:
  *   get:
  *     summary: Get a siteInfo by ID
- *     description: Retrieve a single siteInfo by their ID
  *     tags: [siteInfo]
  *     parameters:
  *       - in: path
  *         name: id
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: The ID of the siteInfo
+ *         description: MongoDB ObjectId of the siteInfo
  *     responses:
  *       200:
- *         description: A single siteInfo
+ *         description: siteInfo object
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/siteInfo'
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: MongoDB ObjectId of the siteInfo
+ *                 name:
+ *                   type: string
+ *                   description: The name of the site
+ *                 description:
+ *                   type: string
+ *                   description: A description of the site
+ *                 averageRating:
+ *                   type: number
+ *                   description: Average rating for the site
+ *                   example: 4.5
+ *                 ratingCount:
+ *                   type: number
+ *                   description: Number of ratings the site has received
+ *                   example: 10
+ *                 comments:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       user:
+ *                         type: string
+ *                         description: User who left the comment
+ *                       content:
+ *                         type: string
+ *                         description: Comment content
+ *                       date:
+ *                         type: string
+ *                         format: date
+ *                         description: Date of the comment
+ *                   description: List of comments for the site
  *       400:
- *         description: Invalid siteInfo ID format
+ *         description: Invalid ID format
  *       404:
  *         description: siteInfo not found
  *       500:
@@ -123,23 +201,81 @@ router.get("/:id", siteInfoController.getById.bind(siteInfoController));
  * /siteInfo:
  *   post:
  *     summary: Create a new siteInfo
- *     description: Create a new siteInfo account
  *     tags: [siteInfo]
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/siteInfo'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the site
+ *               description:
+ *                 type: string
+ *                 description: A description of the site
+ *               averageRating:
+ *                 type: number
+ *                 description: Average rating for the site
+ *               ratingCount:
+ *                 type: number
+ *                 description: Number of ratings the site has received
+ *               comments:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       type: string
+ *                       description: User who left the comment
+ *                     content:
+ *                       type: string
+ *                       description: Comment content
+ *                     date:
+ *                       type: string
+ *                       format: date
+ *                       description: Date of the comment
  *     responses:
  *       201:
  *         description: siteInfo created successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/siteInfo'
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: MongoDB ObjectId of the siteInfo
+ *                 name:
+ *                   type: string
+ *                   description: The name of the site
+ *                 description:
+ *                   type: string
+ *                   description: A description of the site
+ *                 averageRating:
+ *                   type: number
+ *                   description: Average rating for the site
+ *                   example: 4.5
+ *                 ratingCount:
+ *                   type: number
+ *                   description: Number of ratings the site has received
+ *                   example: 10
+ *                 comments:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       user:
+ *                         type: string
+ *                         description: User who left the comment
+ *                       content:
+ *                         type: string
+ *                         description: Comment content
+ *                       date:
+ *                         type: string
+ *                         format: date
+ *                         description: Date of the comment
  *       400:
  *         description: Invalid input
  *       500:
@@ -151,18 +287,15 @@ router.post("/", siteInfoController.create.bind(siteInfoController));
  * @swagger
  * /siteInfo/{id}:
  *   put:
- *     summary: Update a siteInfo by ID
- *     description: Update siteInfo details such as siteInfoname, email, or profile picture
+ *     summary: Update a siteInfo's rating or comments
  *     tags: [siteInfo]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: The ID of the siteInfo
+ *         description: ID of the siteInfo
  *     requestBody:
  *       required: true
  *       content:
@@ -170,19 +303,60 @@ router.post("/", siteInfoController.create.bind(siteInfoController));
  *           schema:
  *             type: object
  *             properties:
- *               siteInfoname:
- *                 type: string
- *               email:
- *                 type: string
- *               profilePicture:
- *                 type: string
+ *               rating:
+ *                 type: number
+ *                 description: New rating to be averaged
+ *                 example: 4.5
+ *               comments:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: One or more comments to append
+ *                 example: ["Beautiful place!", "Loved the history."]
  *     responses:
  *       200:
  *         description: siteInfo updated successfully
- *       400:
- *         description: Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: MongoDB ObjectId of the siteInfo
+ *                 name:
+ *                   type: string
+ *                   description: The name of the site
+ *                 description:
+ *                   type: string
+ *                   description: A description of the site
+ *                 averageRating:
+ *                   type: number
+ *                   description: Average rating for the site
+ *                   example: 4.5
+ *                 ratingCount:
+ *                   type: number
+ *                   description: Number of ratings the site has received
+ *                   example: 10
+ *                 comments:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       user:
+ *                         type: string
+ *                         description: User who left the comment
+ *                       content:
+ *                         type: string
+ *                         description: Comment content
+ *                       date:
+ *                         type: string
+ *                         format: date
+ *                         description: Date of the comment
  *       404:
  *         description: siteInfo not found
+ *       400:
+ *         description: Invalid request
  *       500:
  *         description: Server error
  */
@@ -193,27 +367,22 @@ router.put("/:id", siteInfoController.update.bind(siteInfoController));
  * /siteInfo/{id}:
  *   delete:
  *     summary: Delete a siteInfo by ID
- *     description: Remove a siteInfo from the system
  *     tags: [siteInfo]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: The ID of the siteInfo
+ *         description: ID of the siteInfo
  *     responses:
  *       200:
- *         description: siteInfo deleted successfully
+ *         description: siteInfo deleted
  *       404:
  *         description: siteInfo not found
  *       500:
  *         description: Server error
  */
 router.delete("/:id", siteInfoController.deleteItem.bind(siteInfoController));
-
-
 
 export default router;
