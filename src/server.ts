@@ -6,6 +6,7 @@ import authRoute from "./routes/auth_route";
 import userRoute from "./routes/user_route";
 import siteInfoRoutes from './routes/siteInfo_route';
 import siteInfoHistoryRoute from './routes/siteInfoHistory_route';
+import chatRoute from './chat/routes/chat_route';
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 import bodyParser from "body-parser";
@@ -19,6 +20,7 @@ app.use('/site-info', siteInfoRoutes);
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
 app.use("/siteinfo_history", siteInfoHistoryRoute);
+app.use("/chats", chatRoute);
 
 const PORT = process.env.PORT || 3000;
 
@@ -32,7 +34,7 @@ const options = {
     },
     servers: [{ url: `http://localhost:${PORT}` }],
   },
-  apis: ["./src/routes/*.ts"],
+  apis: ["./src/routes/*.ts" , "./src/chat/routes/*.ts"],
 };
 const specs = swaggerJsDoc(options);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
