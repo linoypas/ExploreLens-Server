@@ -1,0 +1,177 @@
+/**
+ * @file comment_route.ts
+ * @description Defines the comment routes for the ExploreLens server.
+ */
+
+import express from "express";
+import commentController from "../controllers/comments_controller";
+const router = express.Router();
+
+/**
+ * @swagger
+ * tags:
+ *   name: comment
+ *   description: The comment API
+ */
+
+
+/**
+ * @swagger
+ * /comments/{siteId}:
+ *   get:
+ *     summary: Get all comment of post by postId
+ *     tags: [comment]
+ *     parameters:
+ *       - in: path
+ *         name: siteId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The site ID of the site to retrieve comments.
+ *     responses:
+ *       200:
+ *         description: Returns all the comments of the site
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/comment'
+ *       500:
+ *         description: Server error
+ */
+router.get("/:siteId", commentController.getBySiteId.bind(commentController));
+
+/**
+ * @swagger
+ * /comments/{siteId}/{commentId}:
+ *   get:
+ *     summary: Get a comment by ID
+ *     tags: [comment]
+ *     parameters:
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId of the comment
+ *     responses:
+ *       200:
+ *         description: comment object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/comment'
+ *       400:
+ *         description: Invalid ID format
+ *       404:
+ *         description: comment not found
+ *       500:
+ *         description: Server error
+ */
+router.get("/:siteId/:commentId", commentController.getById.bind(commentController));
+
+/**
+ * @swagger
+ * /comment:
+ *   post:
+ *     summary: Create a new comment
+ *     tags: [comment]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/comment'
+ *     responses:
+ *       201:
+ *         description: comment created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/comment'
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Server error
+ */
+router.post("/:siteId/:commentId", commentController.create.bind(commentController));
+
+/**
+ * @swagger
+ * /comment/{id}:
+ *   put:
+ *     summary: Update a comment's rating or comments
+ *     tags: [comment]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the comment
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/comment'
+ *     responses:
+ *       200:
+ *         description: comment updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/comment'
+ *       404:
+ *         description: comment not found
+ *       400:
+ *         description: Invalid request
+ *       500:
+ *         description: Server error
+ */
+router.put("/:siteId/:commentId", commentController.update.bind(commentController));
+
+/**
+ * @swagger
+ * /comment/{id}:
+ *   delete:
+ *     summary: Delete a comment by ID
+ *     tags: [comment]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the comment
+ *     responses:
+ *       200:
+ *         description: comment deleted
+ *       404:
+ *         description: comment not found
+ *       500:
+ *         description: Server error
+ */
+router.delete("/:siteId/:commentId", commentController.deleteItem.bind(commentController));
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+*         comments:
+*           type: array
+*           items:
+*             type: object
+*             properties:
+*               user:
+*                 type: string
+*                 description: User who left the comment
+*               content:
+*                 type: string
+*                 description: Comment content
+*               date:
+*                 type: string
+*                 format: date
+*                 description: Date of the comment
+*/
+
+export default router;

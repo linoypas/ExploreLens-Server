@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import authRoute from "./routes/auth_route";
 import userRoute from "./routes/user_route";
 import siteInfoRoute from './routes/siteInfo_route';
+import commentsRoute from './routes/comments_route';
 import siteInfoHistoryRoute from './routes/siteInfoHistory_route';
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
@@ -16,6 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/public", express.static("public"));
 app.use('/site-info', siteInfoRoute);
+app.use('/comments', siteInfoRoute);
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
 app.use("/siteinfo_history", siteInfoHistoryRoute);
