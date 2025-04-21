@@ -79,10 +79,6 @@ class SiteInfoController extends BaseController<ISiteInfo> {
         siteInfo.averageRating = parseFloat((newTotalRating / siteInfo.ratingCount).toFixed(2));
       }
   
-      if (comments) {
-        const newComments = Array.isArray(comments) ? comments : [comments];
-        siteInfo.comments.push(...newComments);      }
-  
       await siteInfo.save();
       res.status(200).send(siteInfo);
   
