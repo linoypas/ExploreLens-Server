@@ -20,7 +20,7 @@ const router = express.Router();
  * /comments/{siteId}:
  *   get:
  *     summary: Get all comment of post by postId
- *     tags: [comment]
+ *     tags: [comments]
  *     parameters:
  *       - in: path
  *         name: siteId
@@ -45,7 +45,7 @@ router.get("/:siteId", commentController.getBySiteId.bind(commentController));
  * /comments/{siteId}/{commentId}:
  *   get:
  *     summary: Get a comment by ID
- *     tags: [comment]
+ *     tags: [comments]
  *     parameters:
  *       - in: path
  *         name: commentId
@@ -71,10 +71,10 @@ router.get("/:siteId/:commentId", commentController.getById.bind(commentControll
 
 /**
  * @swagger
- * /comment:
+ * /comments:
  *   post:
  *     summary: Create a new comment
- *     tags: [comment]
+ *     tags: [comments]
  *     requestBody:
  *       required: true
  *       content:
@@ -97,10 +97,10 @@ router.post("/:siteId/:commentId", commentController.create.bind(commentControll
 
 /**
  * @swagger
- * /comment/{id}:
+ * /comments/{id}:
  *   put:
  *     summary: Update a comment's rating or comments
- *     tags: [comment]
+ *     tags: [comments]
  *     parameters:
  *       - in: path
  *         name: id
@@ -132,10 +132,10 @@ router.put("/:siteId/:commentId", commentController.update.bind(commentControlle
 
 /**
  * @swagger
- * /comment/{id}:
+ * /comments/{id}:
  *   delete:
  *     summary: Delete a comment by ID
- *     tags: [comment]
+ *     tags: [comments]
  *     parameters:
  *       - in: path
  *         name: id
