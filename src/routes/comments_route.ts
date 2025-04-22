@@ -34,7 +34,7 @@ const router = express.Router();
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/comment'
+ *               $ref: '#/components/schemas/comments'
  *       500:
  *         description: Server error
  */
@@ -65,7 +65,7 @@ router.get("/:siteId", commentController.getBySiteId.bind(commentController));
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/comment'
+ *               $ref: '#/components/schemas/comments'
  *       400:
  *         description: Invalid ID format
  *       404:
@@ -77,7 +77,7 @@ router.get("/:siteId/:commentId", commentController.getById.bind(commentControll
 
 /**
  * @swagger
- * /comments:
+ * /comments/{siteId}:
  *   post:
  *     summary: Create a new comment
  *     tags: [comments]
@@ -93,7 +93,15 @@ router.get("/:siteId/:commentId", commentController.getById.bind(commentControll
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/comments'
+ *             type: object
+ *             properties:
+ *               user:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *             required:
+ *               - user
+ *               - content
  *     responses:
  *       201:
  *         description: comment created successfully
@@ -139,7 +147,7 @@ router.post("/:siteId", commentController.create.bind(commentController));
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/comment'
+ *               $ref: '#/components/schemas/comments'
  *       404:
  *         description: comment not found
  *       400:
@@ -181,22 +189,21 @@ router.delete("/:siteId/:commentId", commentController.deleteItem.bind(commentCo
 /**
  * @swagger
  * components:
- *   schemas:
-*         comments:
-*           type: array
-*           items:
-*             type: object
-*             properties:
-*               user:
-*                 type: string
-*                 description: User who left the comment
-*               content:
-*                 type: string
-*                 description: Comment content
-*               date:
-*                 type: string
-*                 format: date
-*                 description: Date of the comment
+  *   schemas:
+ *     comments:
+ *       type: object
+ *       properties:
+ *         user:
+ *           type: string
+ *           description: User who left the comment
+ *         content:
+ *           type: string
+ *           description: Comment content
+ *         date:
+ *           type: string
+ *           format: date
+ *           readOnly: true
+ *           description: Date of the comment (set by server)
 */
 
 export default router;
