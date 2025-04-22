@@ -236,7 +236,7 @@ router.post("/", siteInfoController.addRating.bind(siteInfoController));
  *             required:
  *               - rating
  *             properties:
- *               rating:
+ *               rating:§
  *                 type: number
  *                 description: The rating to be added
  *                 example: 4.5
