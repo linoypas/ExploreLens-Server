@@ -48,6 +48,12 @@ router.get("/:siteId", commentController.getBySiteId.bind(commentController));
  *     tags: [comments]
  *     parameters:
  *       - in: path
+ *         name: siteId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId of the site
+ *       - in: path
  *         name: commentId
  *         required: true
  *         schema:
@@ -93,21 +99,27 @@ router.get("/:siteId/:commentId", commentController.getById.bind(commentControll
  *       500:
  *         description: Server error
  */
-router.post("/:siteId/:commentId", commentController.create.bind(commentController));
+router.post("/:siteId", commentController.create.bind(commentController));
 
 /**
  * @swagger
- * /comments/{id}:
+ * /comments/{siteId}/{commentId}:
  *   put:
  *     summary: Update a comment's rating or comments
  *     tags: [comments]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: siteId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the comment
+ *         description: ID of the site
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId of the comment
  *     requestBody:
  *       required: true
  *       content:
@@ -132,17 +144,23 @@ router.put("/:siteId/:commentId", commentController.update.bind(commentControlle
 
 /**
  * @swagger
- * /comments/{id}:
+ * /comments/{siteId}/{commentId}:
  *   delete:
  *     summary: Delete a comment by ID
  *     tags: [comments]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: siteId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the comment
+ *         description: ID of the site
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId of the comment
  *     responses:
  *       200:
  *         description: comment deleted

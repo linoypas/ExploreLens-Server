@@ -212,17 +212,17 @@ router.get("/:id", siteInfoController.getById.bind(siteInfoController));
  *       500:
  *         description: Server error
  */
-router.post("/", siteInfoController.addRating.bind(siteInfoController));
+router.post("/", siteInfoController.create.bind(siteInfoController));
 
 /**
  * @swagger
- * /site-info/rating/{id}:
+ * /site-info/rating/{siteId}:
  *   post:
  *     summary: Update a siteInfo's rating
  *     tags: [siteInfo]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: siteId
  *         required: true
  *         schema:
  *           type: string
@@ -254,7 +254,7 @@ router.post("/", siteInfoController.addRating.bind(siteInfoController));
  *       500:
  *         description: Server error
  */
-router.post("/rating/:id", siteInfoController.update.bind(siteInfoController));
+router.post("/rating/:siteId", siteInfoController.addRating.bind(siteInfoController));
 
 /**
  * @swagger
