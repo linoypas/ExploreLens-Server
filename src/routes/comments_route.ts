@@ -95,12 +95,12 @@ router.get("/:siteId/:commentId", commentController.getById.bind(commentControll
  *           schema:
  *             type: object
  *             properties:
- *               user:
+ *               owner:
  *                 type: string
  *               content:
  *                 type: string
  *             required:
- *               - user
+ *               - owner
  *               - content
  *     responses:
  *       201:
@@ -193,9 +193,9 @@ router.delete("/:siteId/:commentId", commentController.deleteItem.bind(commentCo
  *     comments:
  *       type: object
  *       properties:
- *         user:
+ *         owner:
  *           type: string
- *           description: User who left the comment
+ *           description: owner who left the comment
  *         content:
  *           type: string
  *           description: Comment content
