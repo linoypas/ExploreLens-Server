@@ -93,14 +93,14 @@ router.get("/:siteId/:commentId", commentController.getById.bind(commentControll
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/comment'
+ *             $ref: '#/components/schemas/comments'
  *     responses:
  *       201:
  *         description: comment created successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/comment'
+ *               $ref: '#/components/schemas/comments'
  *       400:
  *         description: Invalid input
  *       500:
@@ -112,7 +112,7 @@ router.post("/:siteId", commentController.create.bind(commentController));
  * @swagger
  * /comments/{siteId}/{commentId}:
  *   put:
- *     summary: Update a comment's rating or comments
+ *     summary: Update a comment's rating
  *     tags: [comments]
  *     parameters:
  *       - in: path
@@ -132,7 +132,7 @@ router.post("/:siteId", commentController.create.bind(commentController));
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/comment'
+ *             $ref: '#/components/schemas/comments'
  *     responses:
  *       200:
  *         description: comment updated successfully
