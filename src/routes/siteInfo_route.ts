@@ -216,7 +216,7 @@ router.post("/", siteInfoController.addRating.bind(siteInfoController));
 
 /**
  * @swagger
- * /site-info/{id}:
+ * /site-info/rating/{id}:
  *   post:
  *     summary: Update a siteInfo's rating
  *     tags: [siteInfo]
