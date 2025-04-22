@@ -10,7 +10,7 @@ const router = express.Router();
 /**
  * @swagger
  * tags:
- *   name: comment
+ *   name: comments
  *   description: The comment API
  */
 
