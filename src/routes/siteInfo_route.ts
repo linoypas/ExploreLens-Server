@@ -116,7 +116,7 @@ router.post('/detect-site', upload.single('image'), siteInformationController);
 
 /**
  * @swagger
- * /siteInfo/sitename/{sitename}:
+ * /site-info/sitename/{sitename}:
  *   get:
  *     summary: Get a siteInfo by name or fetch and create it if not found
  *     tags: [siteInfo]
@@ -141,7 +141,7 @@ router.get("/sitename/:sitename", siteInfoController.getBySitename.bind(siteInfo
 
 /**
  * @swagger
- * /siteInfo:
+ * /site-info:
  *   get:
  *     summary: Get all siteInfo documents
  *     tags: [siteInfo]
@@ -161,7 +161,7 @@ router.get("/", siteInfoController.getAll.bind(siteInfoController));
 
 /**
  * @swagger
- * /siteInfo/{id}:
+ * /site-info/{id}:
  *   get:
  *     summary: Get a siteInfo by ID
  *     tags: [siteInfo]
@@ -190,7 +190,7 @@ router.get("/:id", siteInfoController.getById.bind(siteInfoController));
 
 /**
  * @swagger
- * /siteInfo:
+ * /site-info:
  *   post:
  *     summary: Create a new siteInfo
  *     tags: [siteInfo]
@@ -212,13 +212,13 @@ router.get("/:id", siteInfoController.getById.bind(siteInfoController));
  *       500:
  *         description: Server error
  */
-router.post("/", siteInfoController.create.bind(siteInfoController));
+router.post("/", siteInfoController.addRating.bind(siteInfoController));
 
 /**
  * @swagger
- * /siteInfo/{id}:
- *   put:
- *     summary: Update a siteInfo's rating or comments
+ * /site-info/{id}:
+ *   post:
+ *     summary: Update a siteInfo's rating
  *     tags: [siteInfo]
  *     parameters:
  *       - in: path
@@ -227,12 +227,19 @@ router.post("/", siteInfoController.create.bind(siteInfoController));
  *         schema:
  *           type: string
  *         description: ID of the siteInfo
- *     requestBody:
+  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/SiteInfo'
+ *             type: object
+ *             required:
+ *               - rating
+ *             properties:
+ *               rating:
+ *                 type: number
+ *                 description: The rating to be added
+ *                 example: 4.5
  *     responses:
  *       200:
  *         description: siteInfo updated successfully
@@ -247,11 +254,11 @@ router.post("/", siteInfoController.create.bind(siteInfoController));
  *       500:
  *         description: Server error
  */
-router.put("/:id", siteInfoController.update.bind(siteInfoController));
+router.post("/rating/:id", siteInfoController.update.bind(siteInfoController));
 
 /**
  * @swagger
- * /siteInfo/{id}:
+ * /site-info/{id}:
  *   delete:
  *     summary: Delete a siteInfo by ID
  *     tags: [siteInfo]

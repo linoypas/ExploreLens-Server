@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/public", express.static("public"));
 app.use('/site-info', siteInfoRoute);
-app.use('/comments', siteInfoRoute);
+app.use('/comments', commentsRoute);
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
 app.use("/siteinfo_history", siteInfoHistoryRoute);

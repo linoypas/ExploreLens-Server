@@ -41,6 +41,24 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     }
   }
 
+  async update(req: Request, res: Response) {
+    const id = req.params.id;
+    const updates = req.body;
+    try {
+      const updatedItem = await this.model.findByIdAndUpdate(id, updates, {
+        new: true,
+      });
+      if (updatedItem) {
+        res.status(200).send(updatedItem);
+      } else {
+        res.status(404).send("not found");
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  }
+
   async getBySitename(req: Request, res: Response) {
     const siteName = req.params.sitename;
     console.log(siteName)
@@ -62,12 +80,12 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     }
   }
 
-  async update(req: Request, res: Response) : Promise<void> {
-    const id = req.params.id;
-    const { comments, rating } = req.body; 
+  async addRating(req: Request, res: Response) : Promise<void> {
+    const siteId = req.params.siteId;
+    const { rating } = req.body; 
   
     try {
-      const siteInfo = await this.model.findById(id);
+      const siteInfo = await this.model.findById(siteId);
       if (!siteInfo) {
         res.status(404).send("SiteInfo not found");
         return;
