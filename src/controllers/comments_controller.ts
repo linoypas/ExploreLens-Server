@@ -12,7 +12,7 @@ class commentController extends BaseController<IComment> {
   }
 
   async create(req: Request, res: Response) {
-    const siteId = req.query.siteId;
+    const siteId = req.params.siteId;
     const { owner, content } = req.body;
     try {
       const newComment = await commentModel.create({
@@ -29,7 +29,8 @@ class commentController extends BaseController<IComment> {
       await site.save();
       res.status(201).json(newComment);
     } catch (error) {
-      res.status(400).json({ error: "Failed to create chat" });
+      console.log(error)
+      res.status(400).json({ error: "Failed to create comment" });
     }
   }
   async getById(req: Request, res: Response) {

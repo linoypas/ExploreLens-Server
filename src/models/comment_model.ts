@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 export interface IComment {
   _id: string;              
-  user: string;
+  owner: string;
   content: string;
   date: Date;
   siteId: string;
@@ -11,7 +11,7 @@ export interface IComment {
 
 const commentSchema = new Schema<IComment>(
     {
-      user: { type: String, required: true },
+      owner: { type: String, required: true },
       content: { type: String, required: true },
       date: { type: Date, default: Date.now },
       siteId: { type: String, required: true },

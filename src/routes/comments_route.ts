@@ -81,6 +81,13 @@ router.get("/:siteId/:commentId", commentController.getById.bind(commentControll
  *   post:
  *     summary: Create a new comment
  *     tags: [comments]
+ *     parameters:
+ *        - in: path
+ *          name: siteId
+ *          required: true
+ *          schema:
+ *            type: string
+ *          description: MongoDB ObjectId of the site
  *     requestBody:
  *       required: true
  *       content:
