@@ -241,7 +241,7 @@ router.post("/", siteInfoController.create.bind(siteInfoController));
  *                 type: number
  *                 description: The rating to be added
  *                 example: 4.5
- *                userId:
+ *               userId:
  *                 type: string
  *                 description: ID of the user submitting the rating
  *                 example: 64f16b9351263f04e6efb2a0

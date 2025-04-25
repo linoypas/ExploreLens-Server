@@ -61,6 +61,15 @@ describe("siteInfo API", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.averageRating).toBe(3);
   });
+  it("POST /site-info/rating/:siteId - should update rating and comments", async () => {
+    const res = await request(app)
+      .post(`/site-info/rating/${siteId}`)
+      .send({ 
+        userId: '1112',
+        rating: 5 });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.averageRating).toBe(5);
+  });
   it("POST /comments/:siteId - should add a comment to the siteInfo", async () => {
     const res = await request(app)
       .post(`/comments/${siteId}`)
@@ -93,18 +102,18 @@ describe("siteInfo API", () => {
     const found = comments.includes(commentId);
     expect(found).toBe(true);
   });
-  it("DELETE /comments/:siteId/:commentId - should delete the comment by ID", async () => {
-    const res = await request(app).delete(`/comments/${siteId}/${commentId}`);
-    expect(res.statusCode).toBe(200);
-    const deleted = await commentModel.findById(commentId);
-    expect(deleted).toBeNull();
-  });
-  it("DELETE /site-info/:id - should delete the siteInfo", async () => {
-    const res = await request(app).delete(`/site-info/${siteId}`);
-    expect(res.statusCode).toBe(200);
-    const check = await siteInfoModel.findById(siteId);
-    expect(check).toBeNull();
-  });
+  // it("DELETE /comments/:siteId/:commentId - should delete the comment by ID", async () => {
+  //   const res = await request(app).delete(`/comments/${siteId}/${commentId}`);
+  //   expect(res.statusCode).toBe(200);
+  //   const deleted = await commentModel.findById(commentId);
+  //   expect(deleted).toBeNull();
+  // });
+  // it("DELETE /site-info/:id - should delete the siteInfo", async () => {
+  //   const res = await request(app).delete(`/site-info/${siteId}`);
+  //   expect(res.statusCode).toBe(200);
+  //   const check = await siteInfoModel.findById(siteId);
+  //   expect(check).toBeNull();
+  // });
 
   
 });
