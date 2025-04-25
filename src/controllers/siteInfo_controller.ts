@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import BaseController from "./base_controller"; 
 import mongoose from "mongoose";
-import { fetchSiteInfo } from '../providers/gpt/siteInfo';
+import { fetchSiteInfo } from '../providers/gpt/siteInfoGPT';
 import siteInfoModel, { ISiteInfo } from "../models/siteInfo_model";
-import { getImageUrl } from '../middlewares/imageUrl';
+import { getImageUrl } from '../providers/imageUrl/siteInfoImageUrl';
 
 class SiteInfoController extends BaseController<ISiteInfo> {
   constructor() {
