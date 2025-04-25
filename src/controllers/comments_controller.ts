@@ -69,7 +69,7 @@ class commentController extends BaseController<IComment> {
       res.status(500).send({ error: "Server error" });
     }
   }
-
+  
   async update(req: Request, res: Response) {
     const commentId = req.params.commentId;
     const content  = req.body.content;

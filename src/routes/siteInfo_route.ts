@@ -163,13 +163,13 @@ router.get("/", siteInfoController.getAll.bind(siteInfoController));
 
 /**
  * @swagger
- * /site-info/{id}:
+ * /site-info/{siteId}:
  *   get:
- *     summary: Get a siteInfo by ID
+ *     summary: Get a siteInfo by siteId
  *     tags: [siteInfo]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: siteId
  *         required: true
  *         schema:
  *           type: string
@@ -188,7 +188,36 @@ router.get("/", siteInfoController.getAll.bind(siteInfoController));
  *       500:
  *         description: Server error
  */
-router.get("/:id", siteInfoController.getById.bind(siteInfoController));
+router.get("/:siteId", siteInfoController.getById.bind(siteInfoController));
+
+/**
+ * @swagger
+ * /site-info/{siteId}/reduced:
+ *   get:
+ *     summary: Get a siteInfo by ID
+ *     tags: [siteInfo]
+ *     parameters:
+ *       - in: path
+ *         name: siteId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId of the siteInfo
+ *     responses:
+ *       200:
+ *         description: siteInfo object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SiteInfo'
+ *       400:
+ *         description: Invalid ID format
+ *       404:
+ *         description: siteInfo not found
+ *       500:
+ *         description: Server error
+ */
+router.get("/:siteId/reduced", siteInfoController.getReducedSiteInfo.bind(siteInfoController));
 
 /**
  * @swagger
@@ -265,13 +294,13 @@ router.post("/rating/:siteId", authMiddleware, siteInfoController.addRating.bind
 
 /**
  * @swagger
- * /site-info/{id}:
+ * /site-info/{siteId}:
  *   delete:
- *     summary: Delete a siteInfo by ID
+ *     summary: Delete a siteInfo by siteId
  *     tags: [siteInfo]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: siteId
  *         required: true
  *         schema:
  *           type: string
@@ -284,7 +313,7 @@ router.post("/rating/:siteId", authMiddleware, siteInfoController.addRating.bind
  *       500:
  *         description: Server error
  */
-router.delete("/:id", siteInfoController.deleteItem.bind(siteInfoController));
+router.delete("/:siteId", siteInfoController.deleteItem.bind(siteInfoController));
 
 /**
  * @swagger

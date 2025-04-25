@@ -21,7 +21,7 @@ class SiteInfoController extends BaseController<ISiteInfo> {
   }
 
   async getById(req: Request, res: Response) {
-    const { id } = req.params;
+    const id = req.params.siteId;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400).send({ error: "Invalid siteInfo ID format" });
@@ -42,7 +42,7 @@ class SiteInfoController extends BaseController<ISiteInfo> {
   }
 
   async update(req: Request, res: Response) {
-    const id = req.params.id;
+    const id = req.params.siteId;
     const updates = req.body;
     try {
       const updatedItem = await this.model.findByIdAndUpdate(id, updates, {
@@ -114,6 +114,28 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     } catch (error) {
       console.error(error);
       res.status(400).send(error);
+    }
+  }
+  async getReducedSiteInfo(req: Request, res: Response) {
+    const siteId = req.params.siteId;
+  
+    if (!mongoose.Types.ObjectId.isValid(siteId)) {
+      res.status(400).json({ error: "Invalid site ID format" });
+      return;
+    }
+  
+    try {
+      const site = await siteInfoModel.findById(siteId).select("-comments -googleReviews");
+  
+      if (!site) {
+        res.status(404).json({ error: "Site not found" });
+        return;
+      }
+  
+      res.status(200).json(site);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to retrieve site info" });
     }
   }
 }  
