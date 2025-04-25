@@ -8,6 +8,8 @@ import siteInfoController from "../controllers/siteInfo_controller";
 const router = express.Router();
 import { upload } from '../middlewares/uploader';
 import { siteInformationController, mockSiteInformation } from '../controllers/siteDetection_controller';
+import { authMiddleware } from "../controllers/auth_controller";
+
 
 /**
  * @swagger
@@ -259,7 +261,7 @@ router.post("/", siteInfoController.create.bind(siteInfoController));
  *       500:
  *         description: Server error
  */
-router.post("/rating/:siteId", siteInfoController.addRating.bind(siteInfoController));
+router.post("/rating/:siteId", authMiddleware, siteInfoController.addRating.bind(siteInfoController));
 
 /**
  * @swagger
