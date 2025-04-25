@@ -102,18 +102,18 @@ describe("siteInfo API", () => {
     const found = comments.includes(commentId);
     expect(found).toBe(true);
   });
-  // it("DELETE /comments/:siteId/:commentId - should delete the comment by ID", async () => {
-  //   const res = await request(app).delete(`/comments/${siteId}/${commentId}`);
-  //   expect(res.statusCode).toBe(200);
-  //   const deleted = await commentModel.findById(commentId);
-  //   expect(deleted).toBeNull();
-  // });
-  // it("DELETE /site-info/:id - should delete the siteInfo", async () => {
-  //   const res = await request(app).delete(`/site-info/${siteId}`);
-  //   expect(res.statusCode).toBe(200);
-  //   const check = await siteInfoModel.findById(siteId);
-  //   expect(check).toBeNull();
-  // });
+  it("DELETE /comments/:siteId/:commentId - should delete the comment by ID", async () => {
+    const res = await request(app).delete(`/comments/${siteId}/${commentId}`);
+    expect(res.statusCode).toBe(200);
+    const deleted = await commentModel.findById(commentId);
+    expect(deleted).toBeNull();
+  });
+  it("DELETE /site-info/:id - should delete the siteInfo", async () => {
+    const res = await request(app).delete(`/site-info/${siteId}`);
+    expect(res.statusCode).toBe(200);
+    const check = await siteInfoModel.findById(siteId);
+    expect(check).toBeNull();
+  });
 
   
 });

@@ -3,8 +3,7 @@ import BaseController from "./base_controller";
 import mongoose from "mongoose";
 import { fetchSiteInfo } from '../providers/gpt/siteInfo';
 import siteInfoModel, { ISiteInfo } from "../models/siteInfo_model";
-
-
+import { getImageUrl } from '../middlewares/imageUrl';
 
 class SiteInfoController extends BaseController<ISiteInfo> {
   constructor() {
@@ -67,10 +66,12 @@ class SiteInfoController extends BaseController<ISiteInfo> {
       if (siteInfo) {
         res.status(200).send(siteInfo);
       } else {
-        const  providerData= await fetchSiteInfo(siteName);
+        const providerData= await fetchSiteInfo(siteName);
+        const imageUrl= await getImageUrl(siteName)
         const newSiteInfo = await siteInfoModel.create({
           name: siteName,
           description: providerData,
+          imageUrl: imageUrl
         });
         res.status(200).json(newSiteInfo); 
       }

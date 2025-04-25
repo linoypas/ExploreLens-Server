@@ -8,6 +8,7 @@ export interface ISiteInfo {
     ratings: { userId: string; value: number }[];
     averageRating: number;
     comments: string[];
+    imageUrl: string;
 }
 
 const siteInfo = new Schema<ISiteInfo>({
@@ -20,7 +21,8 @@ const siteInfo = new Schema<ISiteInfo>({
     }
   ],
   averageRating: { type: Number, default: 0 },
-  comments: [{ type: String }]
+  comments: [{ type: String }],
+  imageUrl: {type: String}
 });
 
 const siteInfoModel = mongoose.model<ISiteInfo>("siteInfo",siteInfo);
