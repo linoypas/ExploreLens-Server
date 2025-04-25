@@ -235,11 +235,16 @@ router.post("/", siteInfoController.create.bind(siteInfoController));
  *             type: object
  *             required:
  *               - rating
+ *               - userId
  *             properties:
  *               rating:
  *                 type: number
  *                 description: The rating to be added
  *                 example: 4.5
+ *                userId:
+ *                 type: string
+ *                 description: ID of the user submitting the rating
+ *                 example: 64f16b9351263f04e6efb2a0
  *     responses:
  *       200:
  *         description: siteInfo updated successfully
@@ -308,7 +313,7 @@ router.delete("/:id", siteInfoController.deleteItem.bind(siteInfoController));
  *           items:
  *             type: object
  *             properties:
- *               user:
+ *               owner:
  *                 type: string
  *                 description: User who left the comment
  *               content:

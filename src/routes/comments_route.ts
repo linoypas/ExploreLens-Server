@@ -184,7 +184,7 @@ router.put("/:siteId/:commentId", commentController.update.bind(commentControlle
  *       500:
  *         description: Server error
  */
-router.delete("/:siteId/:commentId", commentController.deleteItem.bind(commentController));
+router.delete("/:siteId/:commentId", commentController.delete.bind(commentController));
 
 /**
  * @swagger

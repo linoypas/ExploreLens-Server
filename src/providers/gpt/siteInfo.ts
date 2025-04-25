@@ -27,10 +27,9 @@ async function fetchSiteInfo(siteName: string): Promise<String > {
       ],
     });
     
-    // Log the actual response content
     const content=response.choices[0].message.content || '';
     if (content) {
-      console.log(`Detected Landmark: ${content}`);
+      // console.log(`Detected Landmark: ${content}`);
       return  content;
     } else {
       console.warn("No landmark detected.");

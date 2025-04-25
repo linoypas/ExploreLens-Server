@@ -5,16 +5,21 @@ export interface ISiteInfo {
     _id: string;
     name: string;
     description: string;
+    ratings: { userId: string; value: number }[];
     averageRating: number;
-    ratingCount: number;
     comments: string[];
 }
 
 const siteInfo = new Schema<ISiteInfo>({
   name: { type: String, required: true },
   description: { type: String, required: true },
+  ratings: [
+    {
+      userId: { type: String, required: true },
+      value: { type: Number, required: true }
+    }
+  ],
   averageRating: { type: Number, default: 0 },
-  ratingCount: { type: Number, default: 0 },
   comments: [{ type: String }]
 });
 

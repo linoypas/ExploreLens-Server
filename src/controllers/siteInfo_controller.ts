@@ -67,7 +67,7 @@ class SiteInfoController extends BaseController<ISiteInfo> {
       if (siteInfo) {
         res.status(200).send(siteInfo);
       } else {
-        const providerData= await fetchSiteInfo(siteName);
+        const  providerData= await fetchSiteInfo(siteName);
         const newSiteInfo = await siteInfoModel.create({
           name: siteName,
           description: providerData,
@@ -80,9 +80,10 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     }
   }
 
-  async addRating(req: Request, res: Response) : Promise<void> {
+  async addRating(req: Request, res: Response): Promise<void> {
     const siteId = req.params.siteId;
-    const { rating } = req.body; 
+    const userId = req.body.userId;
+    const rating = req.body.rating;
   
     try {
       const siteInfo = await this.model.findById(siteId);
@@ -91,20 +92,26 @@ class SiteInfoController extends BaseController<ISiteInfo> {
         return;
       }
   
-      if (rating) {
-        const newTotalRating = siteInfo.averageRating * siteInfo.ratingCount + rating;
-        siteInfo.ratingCount += 1;
-        siteInfo.averageRating = parseFloat((newTotalRating / siteInfo.ratingCount).toFixed(2));
+      const existingRating = siteInfo.ratings.find(r => r.userId === userId);
+  
+      if (existingRating) {
+        existingRating.value = rating;
+      } else {
+        siteInfo.ratings.push({ userId, value: rating }); 
       }
+  
+      const total = siteInfo.ratings.reduce((sum, r) => sum + r.value, 0);
+      const count = siteInfo.ratings.length;
+      siteInfo.averageRating = parseFloat((total / count).toFixed(2));
   
       await siteInfo.save();
       res.status(200).send(siteInfo);
   
-      } catch (error) {
+    } catch (error) {
       console.error(error);
       res.status(400).send(error);
-      }
     }
   }
+}  
 
 export default new SiteInfoController();

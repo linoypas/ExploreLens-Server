@@ -72,11 +72,13 @@ class commentController extends BaseController<IComment> {
 
   async update(req: Request, res: Response) {
     const commentId = req.params.commentId;
-    const { content } = req.body;
+    const content  = req.body.content;
+    console.log(content)
     try {
       const updatedcomment = await this.model.findByIdAndUpdate(
         commentId,
-        { content: content }
+        { content: content },
+        { new: true }
       );
       if (updatedcomment) {
         res.status(200).send(updatedcomment);
