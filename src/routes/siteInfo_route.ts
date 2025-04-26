@@ -118,6 +118,55 @@ router.post('/detect-site', upload.single('image'), siteInformationController);
 
 /**
  * @swagger
+ * /siteInfo/siteInfoname/{siteInfoname}:
+ *   get:
+ *     summary: Get a siteInfo by siteInfoname
+ *     description: Retrieve a siteInfo by their siteInfoname
+ *     tags:
+ *       - Site Detection
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Detection result returned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   enum: [success, failure, assume]
+ *                 description:
+ *                   type: string
+ *                 siteInformation:
+ *                   type: object
+ *                   properties:
+ *                     label:
+ *                       type: string
+ *                     x:
+ *                       type: number
+ *                     y:
+ *                       type: number
+ *                     siteName:
+ *                       type: string
+ *       400:
+ *         description: No file uploaded
+ */
+router.post('/detect-site', upload.single('image'), siteInformationController);
+
+/**
+ * @swagger
  * /site-info/sitename/{sitename}:
  *   get:
  *     summary: Get a siteInfo by name or fetch and create it if not found
