@@ -173,7 +173,7 @@ router.get("/", siteInfoController.getAll.bind(siteInfoController));
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId of the siteInfo
+ *         description: ID of the siteInfo
  *     responses:
  *       200:
  *         description: siteInfo object
@@ -199,10 +199,11 @@ router.get("/:siteId", siteInfoController.getById.bind(siteInfoController));
  *     parameters:
  *       - in: path
  *         name: siteId
+ *         name: siteId
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId of the siteInfo
+ *         description: ID of the siteInfo
  *     responses:
  *       200:
  *         description: siteInfo object
@@ -290,16 +291,18 @@ router.post("/", siteInfoController.create.bind(siteInfoController));
  *       500:
  *         description: Server error
  */
-router.post("/rating/:siteId", authMiddleware, siteInfoController.addRating.bind(siteInfoController));
+router.post("/rating/:siteId", siteInfoController.addRating.bind(siteInfoController));
 
 /**
  * @swagger
+ * /site-info/{siteId}:
  * /site-info/{siteId}:
  *   delete:
  *     summary: Delete a siteInfo by siteId
  *     tags: [siteInfo]
  *     parameters:
  *       - in: path
+ *         name: siteId
  *         name: siteId
  *         required: true
  *         schema:
@@ -324,7 +327,7 @@ router.delete("/:siteId", siteInfoController.deleteItem.bind(siteInfoController)
  *       properties:
  *         _id:
  *           type: string
- *           description: MongoDB ObjectId of the siteInfo
+ *           description: ID of the siteInfo
  *         name:
  *           type: string
  *           description: The name of the site
