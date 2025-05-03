@@ -199,7 +199,6 @@ router.get("/:siteId", siteInfoController.getById.bind(siteInfoController));
  *     parameters:
  *       - in: path
  *         name: siteId
- *         name: siteId
  *         required: true
  *         schema:
  *           type: string
@@ -296,13 +295,11 @@ router.post("/rating/:siteId", siteInfoController.addRating.bind(siteInfoControl
 /**
  * @swagger
  * /site-info/{siteId}:
- * /site-info/{siteId}:
  *   delete:
  *     summary: Delete a siteInfo by siteId
  *     tags: [siteInfo]
  *     parameters:
  *       - in: path
- *         name: siteId
  *         name: siteId
  *         required: true
  *         schema:
