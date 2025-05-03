@@ -53,13 +53,13 @@ router.get("/:siteId", commentController.getBySiteId.bind(commentController));
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId of the site
+ *         description: ID of the site
  *       - in: path
  *         name: commentId
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId of the comment
+ *         description: ID of the comment
  *     responses:
  *       200:
  *         description: comment object
@@ -88,7 +88,7 @@ router.get("/:siteId/:commentId", commentController.getById.bind(commentControll
  *          required: true
  *          schema:
  *            type: string
- *          description: MongoDB ObjectId of the site
+ *          description: ID of the site
  *     requestBody:
  *       required: true
  *       content:
@@ -115,7 +115,7 @@ router.get("/:siteId/:commentId", commentController.getById.bind(commentControll
  *       500:
  *         description: Server error
  */
-router.post("/:siteId",authMiddleware, commentController.create.bind(commentController));
+router.post("/:siteId", commentController.create.bind(commentController));
 
 /**
  * @swagger
@@ -135,7 +135,7 @@ router.post("/:siteId",authMiddleware, commentController.create.bind(commentCont
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId of the comment
+ *         description: ID of the comment
  *     requestBody:
  *       required: true
  *       content:
@@ -156,7 +156,7 @@ router.post("/:siteId",authMiddleware, commentController.create.bind(commentCont
  *       500:
  *         description: Server error
  */
-router.put("/:siteId/:commentId", authMiddleware, commentController.update.bind(commentController));
+router.put("/:siteId/:commentId", commentController.update.bind(commentController));
 
 /**
  * @swagger
@@ -176,7 +176,7 @@ router.put("/:siteId/:commentId", authMiddleware, commentController.update.bind(
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId of the comment
+ *         description: ID of the comment
  *     responses:
  *       200:
  *         description: comment deleted
@@ -185,7 +185,7 @@ router.put("/:siteId/:commentId", authMiddleware, commentController.update.bind(
  *       500:
  *         description: Server error
  */
-router.delete("/:siteId/:commentId", authMiddleware, commentController.delete.bind(commentController));
+router.delete("/:siteId/:commentId", commentController.delete.bind(commentController));
 
 /**
  * @swagger

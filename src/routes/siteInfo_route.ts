@@ -163,17 +163,17 @@ router.get("/", siteInfoController.getAll.bind(siteInfoController));
 
 /**
  * @swagger
- * /site-info/{id}:
+ * /site-info/{siteId}:
  *   get:
  *     summary: Get a siteInfo by ID
  *     tags: [siteInfo]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: siteId
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId of the siteInfo
+ *         description: ID of the siteInfo
  *     responses:
  *       200:
  *         description: siteInfo object
@@ -188,7 +188,7 @@ router.get("/", siteInfoController.getAll.bind(siteInfoController));
  *       500:
  *         description: Server error
  */
-router.get("/:id", siteInfoController.getById.bind(siteInfoController));
+router.get("/:siteId", siteInfoController.getById.bind(siteInfoController));
 
 /**
  * @swagger
@@ -261,17 +261,17 @@ router.post("/", siteInfoController.create.bind(siteInfoController));
  *       500:
  *         description: Server error
  */
-router.post("/rating/:siteId", authMiddleware, siteInfoController.addRating.bind(siteInfoController));
+router.post("/rating/:siteId", siteInfoController.addRating.bind(siteInfoController));
 
 /**
  * @swagger
- * /site-info/{id}:
+ * /site-info/{siteId}:
  *   delete:
  *     summary: Delete a siteInfo by ID
  *     tags: [siteInfo]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: siteId
  *         required: true
  *         schema:
  *           type: string
@@ -284,7 +284,7 @@ router.post("/rating/:siteId", authMiddleware, siteInfoController.addRating.bind
  *       500:
  *         description: Server error
  */
-router.delete("/:id", siteInfoController.deleteItem.bind(siteInfoController));
+router.delete("/:siteId", siteInfoController.delete.bind(siteInfoController));
 
 /**
  * @swagger
@@ -295,7 +295,7 @@ router.delete("/:id", siteInfoController.deleteItem.bind(siteInfoController));
  *       properties:
  *         _id:
  *           type: string
- *           description: MongoDB ObjectId of the siteInfo
+ *           description: ID of the siteInfo
  *         name:
  *           type: string
  *           description: The name of the site

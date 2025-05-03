@@ -108,7 +108,8 @@ describe("siteInfo API", () => {
     const deleted = await commentModel.findById(commentId);
     expect(deleted).toBeNull();
   });
-  it("DELETE /site-info/:id - should delete the siteInfo", async () => {
+  it("DELETE /site-info/:siteId - should delete the siteInfo", async () => {
+    console.log(siteId)
     const res = await request(app).delete(`/site-info/${siteId}`);
     expect(res.statusCode).toBe(200);
     const check = await siteInfoModel.findById(siteId);
