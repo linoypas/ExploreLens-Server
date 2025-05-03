@@ -359,7 +359,7 @@ router.post("/", siteInfoController.create.bind(siteInfoController));
  *       500:
  *         description: Server error
  */
-router.post("/rating/:siteId", authMiddleware, siteInfoController.addRating.bind(siteInfoController));
+router.post("/rating/:siteId", siteInfoController.addRating.bind(siteInfoController));
 
 /**
  * @swagger
