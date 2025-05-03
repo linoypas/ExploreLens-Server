@@ -53,13 +53,13 @@ router.get("/:siteId", commentController.getBySiteId.bind(commentController));
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId of the site
+ *         description: ID of the site
  *       - in: path
  *         name: commentId
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId of the comment
+ *         description: ID of the comment
  *     responses:
  *       200:
  *         description: comment object
@@ -88,7 +88,7 @@ router.get("/:siteId/:commentId", commentController.getById.bind(commentControll
  *          required: true
  *          schema:
  *            type: string
- *          description: MongoDB ObjectId of the site
+ *          description: ID of the site
  *     requestBody:
  *       required: true
  *       content:
@@ -135,7 +135,7 @@ router.post("/:siteId", commentController.create.bind(commentController));
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId of the comment
+ *         description: ID of the comment
  *     requestBody:
  *       required: true
  *       content:
@@ -176,7 +176,7 @@ router.put("/:siteId/:commentId", commentController.update.bind(commentControlle
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId of the comment
+ *         description: ID of the comment
  *     responses:
  *       200:
  *         description: comment deleted

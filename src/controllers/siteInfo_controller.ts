@@ -112,6 +112,19 @@ class SiteInfoController extends BaseController<ISiteInfo> {
       res.status(400).send(error);
     }
   }
+  async delete(req: Request, res: Response) {
+    const siteId = req.params.siteId;
+    try {
+      const deleted = await siteInfoModel.findByIdAndDelete(siteId);
+      if (deleted) {
+        res.status(200).send("Deleted");
+      } else {
+        res.status(404).send("site not found");
+      }
+    } catch (error) {
+      res.status(400).send(error);
+    }
+  }
 }  
 
 export default new SiteInfoController();
