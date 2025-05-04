@@ -116,6 +116,7 @@ router.post('/mock-data', upload.single('image'), mockSiteInformation);
  */
 router.post('/detect-site', upload.single('image'), siteInformationController);
 
+
 /**
  * @swagger
  * /site-info:
