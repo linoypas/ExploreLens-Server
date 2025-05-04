@@ -3,8 +3,7 @@ import BaseController from "./base_controller";
 import mongoose from "mongoose";
 import { fetchSiteInfo } from '../providers/gpt/siteInfoGPT';
 import siteInfoModel, { ISiteInfo } from "../models/siteInfo_model";
-import reviewModel from "../models/review_model";
-
+import reviewModel, { IReview } from "../models/review_model";
 import { getImageUrl } from '../providers/imageUrl/siteInfoImageUrl';
 import {getReviews} from '../providers/reviews/googleReviews'
 
@@ -96,7 +95,12 @@ class SiteInfoController extends BaseController<ISiteInfo> {
             siteId: newSiteInfo._id,
           }));
   
-          await reviewModel.insertMany(googleReviews);
+          const insertedReviews = await reviewModel.insertMany(googleReviews);
+          const googleReviewsID = insertedReviews.map((review) => review._id);
+
+          // Update siteInfo with the comment IDs in the comments array
+          newSiteInfo.reviews = googleReviewsID;
+          await newSiteInfo.save();
         }
         res.status(200).json(newSiteInfo); 
       }
