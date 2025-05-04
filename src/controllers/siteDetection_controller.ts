@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import path from 'path';
 import { detectSiteFromImagePath } from '../site-detection/service/detection-service';
 import { BoundingBox } from '../site-detection/models/detectedObjects';
+import siteInfoModel, { ISiteInfo } from "../models/siteInfo_model";
 
 export const siteInformationController = async (req: Request, res: Response): Promise<void> => {
   if (!req.file) {
@@ -11,6 +12,15 @@ export const siteInformationController = async (req: Request, res: Response): Pr
 
   const imagePath = path.resolve(req.file.path);
   const result = await detectSiteFromImagePath(imagePath);
+  if(result.status == "success" || result.status == "assume"){
+    const site = await siteInfoModel.find({ name: result.siteInformation?.siteName});
+    if (site!=null) {
+      const newSite = await siteInfoModel.create({
+        name: result.siteInformation?.siteName,
+      });
+      result.id = newSite._id;
+    }
+  }
   res.status(200).json(result);
 };
 
@@ -39,6 +49,7 @@ export const mockSiteInformation = async (req: Request, res: Response): Promise<
         y: centerY,
         siteName: "Eiffel Tower",
         },
+      id: "6817cfecce7d5c234ea53720"
       }
   ]
   });

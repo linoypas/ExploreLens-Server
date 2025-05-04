@@ -118,31 +118,6 @@ router.post('/detect-site', upload.single('image'), siteInformationController);
 
 /**
  * @swagger
- * /site-info/sitename/{sitename}:
- *   get:
- *     summary: Get a siteInfo by name or fetch and create it if not found
- *     tags: [siteInfo]
- *     parameters:
- *       - in: path
- *         name: sitename
- *         required: true
- *         schema:
- *           type: string
- *         description: The name of the site to retrieve or fetch info for
- *     responses:
- *       200:
- *         description: Returns the existing or newly created siteInfo
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/SiteInfo'
- *       500:
- *         description: Server error
- */
-router.get("/sitename/:sitename", siteInfoController.getBySitename.bind(siteInfoController));
-
-/**
- * @swagger
  * /site-info:
  *   get:
  *     summary: Get all siteInfo documents
@@ -335,10 +310,20 @@ router.delete("/:siteId", siteInfoController.delete.bind(siteInfoController));
  *           type: number
  *           description: Average rating for the site
  *           example: 4.5
- *         ratingCount:
- *           type: number
- *           description: Number of ratings the site has received
- *           example: 10
+ *         rating:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: the id of the owner
+ *               value:
+ *                 type: number
+ *                 description: the value of rating
+ *         imageUrl: 
+ *           type: string
+ *           description: image url using UNSPLASH
  *         reviews:
  *           type: array
  *           items:

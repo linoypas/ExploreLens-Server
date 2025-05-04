@@ -21,27 +21,6 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     }
   }
 
-  async getById(req: Request, res: Response) {
-    const id = req.params.siteId;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      res.status(400).send({ error: "Invalid siteInfo ID format" });
-      return;
-    }
-
-    try {
-      const siteInfo = await this.model.findById(id);
-      if (siteInfo) {
-        res.status(200).send(siteInfo);
-      } else {
-        res.status(404).send({ error: "siteInfo not found" });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).send({ error: "Server error" });
-    }
-  }
-
   async update(req: Request, res: Response) {
     const id = req.params.siteId;
     const updates = req.body;
@@ -60,17 +39,22 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     }
   }
 
-  async getBySitename(req: Request, res: Response) {
-    const siteName = req.params.sitename;
-    console.log(siteName)
+  async getById(req: Request, res: Response) {
+    const id = req.params.siteId;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400).send({ error: "Invalid siteInfo ID format" });
+      return;
+    }
     try {
-      const siteInfo = await this.model.findOne({ name: siteName });
-      if (siteInfo) {
+      const siteInfo = await this.model.findById(id);
+      if (siteInfo && siteInfo.description) {
         res.status(200).send(siteInfo);
+        return;
       } else {
-        const googleData=await getReviews(siteName);
-        const providerData= await fetchSiteInfo(siteName);
-        const imageUrl= await getImageUrl(siteName)
+        if(siteInfo){
+        const googleData=await getReviews(siteInfo.name);
+        const providerData= await fetchSiteInfo(siteInfo.name);
+        const imageUrl= await getImageUrl(siteInfo.name)
         const ratings = (googleData || []).map((review, index) => ({
           userId: `google-${index}`, 
           value: review.rating
@@ -78,31 +62,28 @@ class SiteInfoController extends BaseController<ISiteInfo> {
         const averageRating = ratings.length > 0
         ? parseFloat((ratings.reduce((sum, r) => sum + r.value, 0) / ratings.length).toFixed(2))
         : 0;
-  
-        const newSiteInfo = await siteInfoModel.create({
-          name: siteName,
-          description: providerData,
-          imageUrl: imageUrl,
-          ratings: ratings,
-          averageRating: averageRating
-        });
+          siteInfo.description = providerData;
+          siteInfo.imageUrl = imageUrl;
+          siteInfo.ratings = ratings;
+          siteInfo.averageRating = averageRating;
+          if (googleData && googleData.length > 0) {
+            const googleReviews = googleData.map((review) => ({
+              owner: review.author_name,
+              content: review.text,
+              date: new Date(review.time * 1000),
+              siteId: siteInfo._id,
+            }));
+    
+            const insertedReviews = await reviewModel.insertMany(googleReviews);
+            const googleReviewsID = insertedReviews.map((review) => review._id);
 
-        if (googleData && googleData.length > 0) {
-          const googleReviews = googleData.map((review) => ({
-            owner: review.author_name,
-            content: review.text,
-            date: new Date(review.time * 1000),
-            siteId: newSiteInfo._id,
-          }));
-  
-          const insertedReviews = await reviewModel.insertMany(googleReviews);
-          const googleReviewsID = insertedReviews.map((review) => review._id);
-
-          // Update siteInfo with the comment IDs in the comments array
-          newSiteInfo.reviews = googleReviewsID;
-          await newSiteInfo.save();
+            siteInfo.reviews = googleReviewsID;
+          }
+        await siteInfo.save();
+        res.status(200).json(siteInfo); 
+        } else{
+          res.status(404).send({ error: "site not found" });
         }
-        res.status(200).json(newSiteInfo); 
       }
     } catch (error) {
       console.error(error);

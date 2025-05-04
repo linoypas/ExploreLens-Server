@@ -7,7 +7,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,  // Ensure your OpenAI API key is loaded correctly
 });
 
-async function fetchSiteInfo(siteName: string): Promise<String > {
+async function fetchSiteInfo(siteName: String): Promise<string > {
   if (!siteName) {
     throw new Error('Site name is required');
   }

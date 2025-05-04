@@ -15,7 +15,7 @@ export interface ISiteInfo {
 
 const siteInfo = new Schema<ISiteInfo>({
   name: { type: String, required: true },
-  description: { type: String, required: true },
+  description: { type: String},
   ratings: [
     {
       userId: { type: String, required: true },
