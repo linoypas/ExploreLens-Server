@@ -116,54 +116,6 @@ router.post('/mock-data', upload.single('image'), mockSiteInformation);
  */
 router.post('/detect-site', upload.single('image'), siteInformationController);
 
-/**
- * @swagger
- * /siteInfo/siteInfoname/{siteInfoname}:
- *   get:
- *     summary: Get a siteInfo by siteInfoname
- *     description: Retrieve a siteInfo by their siteInfoname
- *     tags:
- *       - Site Detection
- *     consumes:
- *       - multipart/form-data
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               image:
- *                 type: string
- *                 format: binary
- *     responses:
- *       200:
- *         description: Detection result returned successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   enum: [success, failure, assume]
- *                 description:
- *                   type: string
- *                 siteInformation:
- *                   type: object
- *                   properties:
- *                     label:
- *                       type: string
- *                     x:
- *                       type: number
- *                     y:
- *                       type: number
- *                     siteName:
- *                       type: string
- *       400:
- *         description: No file uploaded
- */
-router.post('/detect-site', upload.single('image'), siteInformationController);
 
 /**
  * @swagger
@@ -222,7 +174,7 @@ router.get("/", siteInfoController.getAll.bind(siteInfoController));
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId of the siteInfo
+ *         description: ID of the siteInfo
  *     responses:
  *       200:
  *         description: siteInfo object
@@ -339,7 +291,7 @@ router.post("/", siteInfoController.create.bind(siteInfoController));
  *       500:
  *         description: Server error
  */
-router.post("/rating/:siteId", authMiddleware, siteInfoController.addRating.bind(siteInfoController));
+router.post("/rating/:siteId", siteInfoController.addRating.bind(siteInfoController));
 
 /**
  * @swagger
@@ -362,7 +314,7 @@ router.post("/rating/:siteId", authMiddleware, siteInfoController.addRating.bind
  *       500:
  *         description: Server error
  */
-router.delete("/:siteId", siteInfoController.deleteItem.bind(siteInfoController));
+router.delete("/:siteId", siteInfoController.delete.bind(siteInfoController));
 
 /**
  * @swagger
@@ -373,7 +325,7 @@ router.delete("/:siteId", siteInfoController.deleteItem.bind(siteInfoController)
  *       properties:
  *         _id:
  *           type: string
- *           description: MongoDB ObjectId of the siteInfo
+ *           description: ID of the siteInfo
  *         name:
  *           type: string
  *           description: The name of the site
