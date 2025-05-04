@@ -1,52 +1,52 @@
 /**
- * @file comment_route.ts
- * @description Defines the comment routes for the ExploreLens server.
+ * @file review_route.ts
+ * @description Defines the review routes for the ExploreLens server.
  */
 
 import express from "express";
-import commentController from "../controllers/comments_controller";
+import reviewController from "../controllers/reviews_controller";
 const router = express.Router();
 import { authMiddleware } from "../controllers/auth_controller";
 
 /**
  * @swagger
  * tags:
- *   name: comments
- *   description: The comment API
+ *   name: reviews
+ *   description: The review API
  */
 
 
 /**
  * @swagger
- * /comments/{siteId}:
+ * /reviews/{siteId}:
  *   get:
- *     summary: Get all comment of post by postId
- *     tags: [comments]
+ *     summary: Get all review of post by postId
+ *     tags: [reviews]
  *     parameters:
  *       - in: path
  *         name: siteId
  *         required: true
  *         schema:
  *           type: string
- *         description: The site ID of the site to retrieve comments.
+ *         description: The site ID of the site to retrieve reviews.
  *     responses:
  *       200:
- *         description: Returns all the comments of the site
+ *         description: Returns all the reviews of the site
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/comments'
+ *               $ref: '#/components/schemas/reviews'
  *       500:
  *         description: Server error
  */
-router.get("/:siteId", commentController.getBySiteId.bind(commentController));
+router.get("/:siteId", reviewController.getBySiteId.bind(reviewController));
 
 /**
  * @swagger
- * /comments/{siteId}/{commentId}:
+ * /reviews/{siteId}/{reviewId}:
  *   get:
- *     summary: Get a comment by ID
- *     tags: [comments]
+ *     summary: Get a review by ID
+ *     tags: [reviews]
  *     parameters:
  *       - in: path
  *         name: siteId
@@ -55,33 +55,33 @@ router.get("/:siteId", commentController.getBySiteId.bind(commentController));
  *           type: string
  *         description: ID of the site
  *       - in: path
- *         name: commentId
+ *         name: reviewId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the comment
+ *         description: ID of the review
  *     responses:
  *       200:
- *         description: comment object
+ *         description: review object
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/comments'
+ *               $ref: '#/components/schemas/reviews'
  *       400:
  *         description: Invalid ID format
  *       404:
- *         description: comment not found
+ *         description: review not found
  *       500:
  *         description: Server error
  */
-router.get("/:siteId/:commentId", commentController.getById.bind(commentController));
+router.get("/:siteId/:reviewId", reviewController.getById.bind(reviewController));
 
 /**
  * @swagger
- * /comments/{siteId}:
+ * /reviews/{siteId}:
  *   post:
- *     summary: Create a new comment
- *     tags: [comments]
+ *     summary: Create a new review
+ *     tags: [reviews]
  *     parameters:
  *        - in: path
  *          name: siteId
@@ -105,24 +105,24 @@ router.get("/:siteId/:commentId", commentController.getById.bind(commentControll
  *               - content
  *     responses:
  *       201:
- *         description: comment created successfully
+ *         description: review created successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/comments'
+ *               $ref: '#/components/schemas/reviews'
  *       400:
  *         description: Invalid input
  *       500:
  *         description: Server error
  */
-router.post("/:siteId", commentController.create.bind(commentController));
+router.post("/:siteId", reviewController.create.bind(reviewController));
 
 /**
  * @swagger
- * /comments/{siteId}/{commentId}:
+ * /reviews/{siteId}/{reviewId}:
  *   put:
- *     summary: Update a comment's rating
- *     tags: [comments]
+ *     summary: Update a review's rating
+ *     tags: [reviews]
  *     parameters:
  *       - in: path
  *         name: siteId
@@ -131,39 +131,39 @@ router.post("/:siteId", commentController.create.bind(commentController));
  *           type: string
  *         description: ID of the site
  *       - in: path
- *         name: commentId
+ *         name: reviewId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the comment
+ *         description: ID of the review
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/comments'
+ *             $ref: '#/components/schemas/reviews'
  *     responses:
  *       200:
- *         description: comment updated successfully
+ *         description: review updated successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/comments'
+ *               $ref: '#/components/schemas/reviews'
  *       404:
- *         description: comment not found
+ *         description: review not found
  *       400:
  *         description: Invalid request
  *       500:
  *         description: Server error
  */
-router.put("/:siteId/:commentId", commentController.update.bind(commentController));
+router.put("/:siteId/:reviewId", reviewController.update.bind(reviewController));
 
 /**
  * @swagger
- * /comments/{siteId}/{commentId}:
+ * /reviews/{siteId}/{reviewId}:
  *   delete:
- *     summary: Delete a comment by ID
- *     tags: [comments]
+ *     summary: Delete a review by ID
+ *     tags: [reviews]
  *     parameters:
  *       - in: path
  *         name: siteId
@@ -172,39 +172,39 @@ router.put("/:siteId/:commentId", commentController.update.bind(commentControlle
  *           type: string
  *         description: ID of the site
  *       - in: path
- *         name: commentId
+ *         name: reviewId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the comment
+ *         description: ID of the review
  *     responses:
  *       200:
- *         description: comment deleted
+ *         description: review deleted
  *       404:
- *         description: comment not found
+ *         description: review not found
  *       500:
  *         description: Server error
  */
-router.delete("/:siteId/:commentId", commentController.delete.bind(commentController));
+router.delete("/:siteId/:reviewId", reviewController.delete.bind(reviewController));
 
 /**
  * @swagger
  * components:
   *   schemas:
- *     comments:
+ *     reviews:
  *       type: object
  *       properties:
  *         owner:
  *           type: string
- *           description: owner who left the comment
+ *           description: owner who left the review
  *         content:
  *           type: string
- *           description: Comment content
+ *           description: review content
  *         date:
  *           type: string
  *           format: date
  *           readOnly: true
- *           description: Date of the comment (set by server)
+ *           description: Date of the review (set by server)
 */
 
 export default router;

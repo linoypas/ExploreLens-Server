@@ -1,7 +1,7 @@
 import request from "supertest";
 import mongoose from "mongoose";
 import siteInfoModel from "../models/siteInfo_model"; 
-import commentModel from "../models/comment_model";
+import reviewModel from "../models/review_model";
 import initApp from "../server";
 import { Express } from "express";
 
@@ -10,7 +10,7 @@ var app: Express;
 beforeAll(async () => {
     app = await initApp();
     await siteInfoModel.deleteMany();
-    await commentModel.deleteMany();
+    await reviewModel.deleteMany();
 });
 
 afterAll(async () => {
@@ -20,7 +20,7 @@ afterAll(async () => {
 describe("siteInfo API", () => {
   let sitename: string = "eiffel";
   let siteId: string;
-  let commentId: string;
+  let reviewId: string;
 
   it("GET /site-info/sitename/:sitename - should return existing siteInfo by name", async () => {
     const res = await request(app).get(`/site-info/sitename/${sitename}`);
@@ -42,7 +42,7 @@ describe("siteInfo API", () => {
     expect(res.body._id).toBe(siteId);
   });
 
-  it("POST /site-info/rating/:siteId - should update rating and comments", async () => {
+  it("POST /site-info/rating/:siteId - should update rating and reviews", async () => {
     const res = await request(app)
       .post(`/site-info/rating/${siteId}`)
       .send({ 
@@ -52,7 +52,7 @@ describe("siteInfo API", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.averageRating).toBeGreaterThan(0);
   });
-  it("POST /site-info/rating/:siteId - should update rating and comments", async () => {
+  it("POST /site-info/rating/:siteId - should update rating and reviews", async () => {
     const res = await request(app)
       .post(`/site-info/rating/${siteId}`)
       .send({ 
@@ -61,7 +61,7 @@ describe("siteInfo API", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.averageRating).toBe(3);
   });
-  it("POST /site-info/rating/:siteId - should update rating and comments", async () => {
+  it("POST /site-info/rating/:siteId - should update rating and reviews", async () => {
     const res = await request(app)
       .post(`/site-info/rating/${siteId}`)
       .send({ 
@@ -70,42 +70,42 @@ describe("siteInfo API", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.averageRating).toBe(5);
   });
-  it("POST /comments/:siteId - should add a comment to the siteInfo", async () => {
+  it("POST /reviews/:siteId - should add a review to the siteInfo", async () => {
     const res = await request(app)
-      .post(`/comments/${siteId}`)
+      .post(`/reviews/${siteId}`)
       .send({ content: "Great place!", owner: "linoy" });
     expect(res.statusCode).toBe(201);
     expect(res.body.content).toBe("Great place!");
     expect(res.body.owner).toBe("linoy");
-    commentId = res.body._id;
+    reviewId = res.body._id;
   });
-  it("PUT /comments/:siteId/:commentId - should update the comment content", async () => {
-    const updatedContent = "Updated comment!";
+  it("PUT /reviews/:siteId/:reviewId - should update the review content", async () => {
+    const updatedContent = "Updated review!";
     const res = await request(app)
-      .put(`/comments/${siteId}/${commentId}`)
+      .put(`/reviews/${siteId}/${reviewId}`)
       .send({ content: updatedContent });
     expect(res.statusCode).toBe(200);
-    expect(res.body._id).toBe(commentId);
+    expect(res.body._id).toBe(reviewId);
     expect(res.body.content).toBe(updatedContent);
   });
-  it("GET /comments/:sitetId/:commentId' - should retrieve the comment by ID", async () => {
-    const res = await request(app).get(`/comments/${siteId}/${commentId}`);
+  it("GET /reviews/:sitetId/:reviewId' - should retrieve the review by ID", async () => {
+    const res = await request(app).get(`/reviews/${siteId}/${reviewId}`);
     expect(res.statusCode).toBe(200);
-    expect(res.body._id).toBe(commentId);
-    expect(res.body.content).toBe("Updated comment!");
+    expect(res.body._id).toBe(reviewId);
+    expect(res.body.content).toBe("Updated review!");
   });
-  it("GET /site-info/:siteId - should contain the posted comment", async () => {
+  it("GET /site-info/:siteId - should contain the posted review", async () => {
     const res = await request(app).get(`/site-info/${siteId}`);
     expect(res.statusCode).toBe(200);
-    const comments = res.body.comments;
-    expect(Array.isArray(comments)).toBe(true);
-    const found = comments.includes(commentId);
+    const reviews = res.body.reviews;
+    expect(Array.isArray(reviews)).toBe(true);
+    const found = reviews.includes(reviewId);
     expect(found).toBe(true);
   });
-  it("DELETE /comments/:siteId/:commentId - should delete the comment by ID", async () => {
-    const res = await request(app).delete(`/comments/${siteId}/${commentId}`);
+  it("DELETE /reviews/:siteId/:reviewId - should delete the review by ID", async () => {
+    const res = await request(app).delete(`/reviews/${siteId}/${reviewId}`);
     expect(res.statusCode).toBe(200);
-    const deleted = await commentModel.findById(commentId);
+    const deleted = await reviewModel.findById(reviewId);
     expect(deleted).toBeNull();
   });
   it("DELETE /site-info/:siteId - should delete the siteInfo", async () => {
