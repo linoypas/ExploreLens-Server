@@ -21,6 +21,8 @@ const router = express.Router();
  *         - siteInfoId
  *         - userId
  *         - geoHash
+ *         - longitude                       
+ *         - latitude
  *       properties:
  *         _id:
  *           type: string
@@ -29,6 +31,10 @@ const router = express.Router();
  *         userId:
  *           type: string
  *         geoHash:
+ *           type: string
+ *         longitude:
+ *           type: string
+ *         latitude:
  *           type: string
  *         createdAt:
  *           type: string
