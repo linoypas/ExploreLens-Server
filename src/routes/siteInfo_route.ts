@@ -313,7 +313,7 @@ router.post("/rating/:siteId", siteInfoController.addRating.bind(siteInfoControl
  *       500:
  *         description: Server error
  */
-router.delete("/:siteId", siteInfoController.deleteItem.bind(siteInfoController));
+router.delete("/:siteId", siteInfoController.delete.bind(siteInfoController));
 
 /**
  * @swagger
