@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IReview } from '../../models/siteInfo_model';
+import { IGoogleReview } from '../../models/review_model';
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 
@@ -25,7 +25,7 @@ const getPlaceId = async (siteName: string): Promise<string | null> => {
   }
 };
 
-export const getReviews = async (siteName: string): Promise<IReview[] | null> => {
+export const getReviews = async (siteName: string): Promise<IGoogleReview[] | null> => {
     const placeId = await getPlaceId(siteName);
     if (!placeId) {
       console.log('No place found for:', siteName);
@@ -41,7 +41,7 @@ export const getReviews = async (siteName: string): Promise<IReview[] | null> =>
         },
       });
   
-      const reviews: IReview[] = response.data.result?.reviews || [];
+      const reviews: IGoogleReview[] = response.data.result?.reviews || [];
   
       if (reviews.length === 0) {
         console.log('ℹ️ No reviews found for:', siteName);

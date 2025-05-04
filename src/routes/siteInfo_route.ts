@@ -339,22 +339,22 @@ router.delete("/:siteId", siteInfoController.deleteItem.bind(siteInfoController)
  *           type: number
  *           description: Number of ratings the site has received
  *           example: 10
- *         comments:
+ *         reviews:
  *           type: array
  *           items:
  *             type: object
  *             properties:
  *               owner:
  *                 type: string
- *                 description: User who left the comment
+ *                 description: User who left the review
  *               content:
  *                 type: string
- *                 description: Comment content
+ *                 description: review content
  *               date:
  *                 type: string
  *                 format: date
- *                 description: Date of the comment
- *           description: List of comments for the site
+ *                 description: Date of the review
+ *           description: List of reviews for the site
  */
 
 export default router;

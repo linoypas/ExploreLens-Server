@@ -1,7 +1,14 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
-export interface IComment {
+export interface IGoogleReview {
+  author_name: string;
+  rating: number;
+  text: string;
+  time: number;
+  relative_time_description: string;
+}
+export interface IReview {
   _id: string;              
   owner: string;
   content: string;
@@ -9,7 +16,7 @@ export interface IComment {
   siteId: string;
 }
 
-const commentSchema = new Schema<IComment>(
+const reviewSchema = new Schema<IReview>(
     {
       owner: { type: String, required: true },
       content: { type: String, required: true },
@@ -18,5 +25,5 @@ const commentSchema = new Schema<IComment>(
     },
   );
 
-const commentModel = mongoose.model<IComment>("Comment",commentSchema);
-export default commentModel;
+const reviewModel = mongoose.model<IReview>("review",reviewSchema);
+export default reviewModel;

@@ -3,8 +3,10 @@ import BaseController from "./base_controller";
 import mongoose from "mongoose";
 import { fetchSiteInfo } from '../providers/gpt/siteInfoGPT';
 import siteInfoModel, { ISiteInfo } from "../models/siteInfo_model";
+import reviewModel from "../models/review_model";
+
 import { getImageUrl } from '../providers/imageUrl/siteInfoImageUrl';
-import {getReviews} from '../providers/comments/googleReviews'
+import {getReviews} from '../providers/reviews/googleReviews'
 
 class SiteInfoController extends BaseController<ISiteInfo> {
   constructor() {
@@ -67,15 +69,35 @@ class SiteInfoController extends BaseController<ISiteInfo> {
       if (siteInfo) {
         res.status(200).send(siteInfo);
       } else {
-        const googleReviews=await getReviews(siteName);
+        const googleData=await getReviews(siteName);
         const providerData= await fetchSiteInfo(siteName);
         const imageUrl= await getImageUrl(siteName)
+        const ratings = (googleData || []).map((review, index) => ({
+          userId: `google-${index}`, 
+          value: review.rating
+        }));
+        const averageRating = ratings.length > 0
+        ? parseFloat((ratings.reduce((sum, r) => sum + r.value, 0) / ratings.length).toFixed(2))
+        : 0;
+  
         const newSiteInfo = await siteInfoModel.create({
           name: siteName,
           description: providerData,
           imageUrl: imageUrl,
-          googleReviews: googleReviews
+          ratings: ratings,
+          averageRating: averageRating
         });
+
+        if (googleData && googleData.length > 0) {
+          const googleReviews = googleData.map((review) => ({
+            owner: review.author_name,
+            content: review.text,
+            date: new Date(review.time * 1000),
+            siteId: newSiteInfo._id,
+          }));
+  
+          await reviewModel.insertMany(googleReviews);
+        }
         res.status(200).json(newSiteInfo); 
       }
     } catch (error) {
@@ -125,7 +147,7 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     }
   
     try {
-      const site = await siteInfoModel.findById(siteId).select("-comments -googleReviews");
+      const site = await siteInfoModel.findById(siteId).select("-reviews");
   
       if (!site) {
         res.status(404).json({ error: "Site not found" });
