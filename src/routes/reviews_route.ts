@@ -96,12 +96,12 @@ router.get("/:siteId/:reviewId", reviewController.getById.bind(reviewController)
  *           schema:
  *             type: object
  *             properties:
- *               owner:
+ *               userId:
  *                 type: string
  *               content:
  *                 type: string
  *             required:
- *               - owner
+ *               - userId
  *               - content
  *     responses:
  *       201:
@@ -194,9 +194,9 @@ router.delete("/:siteId/:reviewId", reviewController.delete.bind(reviewControlle
  *     reviews:
  *       type: object
  *       properties:
- *         owner:
+ *         userId:
  *           type: string
- *           description: owner who left the review
+ *           description: userId who left the review
  *         content:
  *           type: string
  *           description: review content

@@ -8,7 +8,7 @@ export interface ISiteInfo {
     description: string;
     ratings: { userId: string; value: number }[];
     averageRating: number;
-    reviews: string[];
+    reviewsIds: string[];
     imageUrl: string;
 }
 
@@ -23,7 +23,7 @@ const siteInfo = new Schema<ISiteInfo>({
     }
   ],
   averageRating: { type: Number, default: 0 },
-  reviews: [{ type: String }],
+  reviewsIds: [{ type: String }],
   imageUrl: {type: String},
 });
 

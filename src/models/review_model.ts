@@ -10,7 +10,7 @@ export interface IGoogleReview {
 }
 export interface IReview {
   _id: string;              
-  owner: string;
+  userId: string;
   content: string;
   date: Date;
   siteId: string;
@@ -18,7 +18,7 @@ export interface IReview {
 
 const reviewSchema = new Schema<IReview>(
     {
-      owner: { type: String, required: true },
+      userId: { type: String, required: true },
       content: { type: String, required: true },
       date: { type: Date, default: Date.now },
       siteId: { type: String, required: true },

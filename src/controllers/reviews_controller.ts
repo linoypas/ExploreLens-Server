@@ -13,10 +13,10 @@ class reviewController extends BaseController<IReview> {
 
   async create(req: Request, res: Response) {
     const siteId = req.params.siteId;
-    const { owner, content } = req.body;
+    const { userId, content } = req.body;
     try {
       const newreview = await reviewModel.create({
-        owner: owner,
+        userId: userId,
         content: content,
         siteId: siteId
       });
@@ -25,7 +25,7 @@ class reviewController extends BaseController<IReview> {
         res.status(404).json({ error: "Site not found" });
         return;
       }
-      site.reviews.push(newreview._id);
+      site.reviewsIds.push(newreview._id);
       await site.save();
       res.status(201).json(newreview);
     } catch (error) {
