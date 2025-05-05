@@ -13,8 +13,10 @@ export const siteInformationController = async (req: Request, res: Response): Pr
   const imagePath = path.resolve(req.file.path);
   const result = await detectSiteFromImagePath(imagePath);
   if(result.status == "success" || result.status == "assume"){
-    const site = await siteInfoModel.find({ name: result.siteInformation?.siteName});
-    if (site!=null) {
+    const site = await siteInfoModel.findOne({ name: result.siteInformation?.siteName});
+    if (site) {
+      result.id = site._id;
+    } else {
       const newSite = await siteInfoModel.create({
         name: result.siteInformation?.siteName,
       });
@@ -37,6 +39,16 @@ export const mockSiteInformation = async (req: Request, res: Response): Promise<
   };
   const centerX = boundingBox.x + (boundingBox.width / 2);
   const centerY = boundingBox.y + (boundingBox.height / 2);
+  const site = await siteInfoModel.findOne({ name: "Eiffel Tower"});
+  let siteId;
+  if(site){
+    siteId = site._id
+  } else {
+    const newSite = await siteInfoModel.create({
+      name: "Eiffel Tower"
+    });
+    siteId = newSite._id
+  }
   res.status(200).json({
   message: 'Image uploaded successfully',
   objects: [
@@ -49,7 +61,7 @@ export const mockSiteInformation = async (req: Request, res: Response): Promise<
         y: centerY,
         siteName: "Eiffel Tower",
         },
-      id: "6817cfecce7d5c234ea53720"
+      id: siteId
       }
   ]
   });
