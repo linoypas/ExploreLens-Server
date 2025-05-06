@@ -1,9 +1,15 @@
+/**
+ * @file siteInfo_route.ts
+ * @description Defines the siteInfo routes for the ExploreLens server.
+ */
+
 import express from "express";
 import siteInfoController from "../controllers/siteInfo_controller";
+const router = express.Router();
 import { upload } from '../middlewares/uploader';
 import { siteInformationController, mockSiteInformation } from '../controllers/siteDetection_controller';
+import { authMiddleware } from "../controllers/auth_controller";
 
-const router = express.Router();
 
 /**
  * @swagger
@@ -110,79 +116,22 @@ router.post('/mock-data', upload.single('image'), mockSiteInformation);
  */
 router.post('/detect-site', upload.single('image'), siteInformationController);
 
-/**
- * @swagger
- * /siteInfo/siteInfoname/{siteInfoname}:
- *   get:
- *     summary: Get a siteInfo by siteInfoname
- *     description: Retrieve a siteInfo by their siteInfoname
- *     tags:
- *       - siteInfo
- *     parameters:
- *       - in: path
- *         name: siteInfoname
- *         schema:
- *           type: string
- *         required: true
- *         description: The siteInfoname of the siteInfo
- *     responses:
- *       200:
- *         description: The siteInfo object
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/siteInfo'
- *       404:
- *         description: siteInfo not found
- *       500:
- *         description: Server error
- */
-router.get("/sitename/:sitename", siteInfoController.getBySitename.bind(siteInfoController));
 
 /**
  * @swagger
- * components:
- *   schemas:
- *     siteInfo:
- *       type: object
- *       required:
- *         - site name
- *       properties:
- *         _id:
- *           type: string
- *           description: The auto-generated ID of the siteInfo
- *         description:
- *           type: string
- *           description: The description of the site
- *         comments:
- *           type: string
- *           description: The comments on the site
- *         rate:
- *           type: string
- *           description: rate of the site 
- *       example:
- *         _id: 60d0fe4f5311236168a109ca
- *         siteInfoname: eiffel towert
- *         description: The Eiffel Tower is a world-famous iron lattice tower located in Paris, France. Built by engineer Gustave Eiffel for the 1889 World's Fair, it stands 330 meters (1,083 feet) tall and was the tallest structure in the world until 1930. Today, it's one of the most iconic landmarks in the world and a symbol of France, attracting millions of visitors every year.
- *         comments:
- */
-
-/**
- * @swagger
- * /siteInfo:
+ * /site-info:
  *   get:
- *     summary: Get all siteInfo
- *     description: Retrieve a list of all siteInfo
+ *     summary: Get all siteInfo documents
  *     tags: [siteInfo]
  *     responses:
  *       200:
- *         description: A list of siteInfo
+ *         description: List of all siteInfo
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/siteInfo'
+ *                 $ref: '#/components/schemas/SiteInfo'
  *       500:
  *         description: Server error
  */
@@ -190,56 +139,81 @@ router.get("/", siteInfoController.getAll.bind(siteInfoController));
 
 /**
  * @swagger
- * /siteInfo/{id}:
+ * /site-info/{siteId}:
  *   get:
- *     summary: Get a siteInfo by ID
- *     description: Retrieve a single siteInfo by their ID
+ *     summary: Get a siteInfo by siteId
  *     tags: [siteInfo]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: siteId
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: The ID of the siteInfo
+ *         description: ID of the siteInfo
  *     responses:
  *       200:
- *         description: A single siteInfo
+ *         description: siteInfo object
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/siteInfo'
+ *               $ref: '#/components/schemas/SiteInfo'
  *       400:
- *         description: Invalid siteInfo ID format
+ *         description: Invalid ID format
  *       404:
  *         description: siteInfo not found
  *       500:
  *         description: Server error
  */
-router.get("/:id", siteInfoController.getById.bind(siteInfoController));
+router.get("/:siteId", siteInfoController.getById.bind(siteInfoController));
 
 /**
  * @swagger
- * /siteInfo:
+ * /site-info/{siteId}/reduced:
+ *   get:
+ *     summary: Get a siteInfo by ID
+ *     tags: [siteInfo]
+ *     parameters:
+ *       - in: path
+ *         name: siteId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the siteInfo
+ *     responses:
+ *       200:
+ *         description: siteInfo object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SiteInfo'
+ *       400:
+ *         description: Invalid ID format
+ *       404:
+ *         description: siteInfo not found
+ *       500:
+ *         description: Server error
+ */
+router.get("/:siteId/reduced", siteInfoController.getReducedSiteInfo.bind(siteInfoController));
+
+/**
+ * @swagger
+ * /site-info:
  *   post:
  *     summary: Create a new siteInfo
- *     description: Create a new siteInfo account
  *     tags: [siteInfo]
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/siteInfo'
+ *             $ref: '#/components/schemas/SiteInfo'
  *     responses:
  *       201:
  *         description: siteInfo created successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/siteInfo'
+ *               $ref: '#/components/schemas/SiteInfo'
  *       400:
  *         description: Invalid input
  *       500:
@@ -249,71 +223,124 @@ router.post("/", siteInfoController.create.bind(siteInfoController));
 
 /**
  * @swagger
- * /siteInfo/{id}:
- *   put:
- *     summary: Update a siteInfo by ID
- *     description: Update siteInfo details such as siteInfoname, email, or profile picture
+ * /site-info/rating/{siteId}:
+ *   post:
+ *     summary: Update a siteInfo's rating
  *     tags: [siteInfo]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: siteId
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: The ID of the siteInfo
- *     requestBody:
+ *         description: ID of the siteInfo
+  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - rating
+ *               - userId
  *             properties:
- *               siteInfoname:
+ *               rating:
+ *                 type: number
+ *                 description: The rating to be added
+ *                 example: 4.5
+ *               userId:
  *                 type: string
- *               email:
- *                 type: string
- *               profilePicture:
- *                 type: string
+ *                 description: ID of the user submitting the rating
+ *                 example: 64f16b9351263f04e6efb2a0
  *     responses:
  *       200:
  *         description: siteInfo updated successfully
- *       400:
- *         description: Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SiteInfo'
  *       404:
  *         description: siteInfo not found
+ *       400:
+ *         description: Invalid request
  *       500:
  *         description: Server error
  */
-router.put("/:id", siteInfoController.update.bind(siteInfoController));
+router.post("/rating/:siteId", siteInfoController.addRating.bind(siteInfoController));
 
 /**
  * @swagger
- * /siteInfo/{id}:
+ * /site-info/{siteId}:
  *   delete:
- *     summary: Delete a siteInfo by ID
- *     description: Remove a siteInfo from the system
+ *     summary: Delete a siteInfo by siteId
  *     tags: [siteInfo]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: siteId
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: The ID of the siteInfo
+ *         description: ID of the siteInfo
  *     responses:
  *       200:
- *         description: siteInfo deleted successfully
+ *         description: siteInfo deleted
  *       404:
  *         description: siteInfo not found
  *       500:
  *         description: Server error
  */
-router.delete("/:id", siteInfoController.deleteItem.bind(siteInfoController));
+router.delete("/:siteId", siteInfoController.delete.bind(siteInfoController));
 
-
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     SiteInfo:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: ID of the siteInfo
+ *         name:
+ *           type: string
+ *           description: The name of the site
+ *         description:
+ *           type: string
+ *           description: A description of the site
+ *         averageRating:
+ *           type: number
+ *           description: Average rating for the site
+ *           example: 4.5
+ *         rating:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: the id of the owner
+ *               value:
+ *                 type: number
+ *                 description: the value of rating
+ *         imageUrl: 
+ *           type: string
+ *           description: image url using UNSPLASH
+ *         reviews:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               owner:
+ *                 type: string
+ *                 description: User who left the review
+ *               content:
+ *                 type: string
+ *                 description: review content
+ *               date:
+ *                 type: string
+ *                 format: date
+ *                 description: Date of the review
+ *           description: List of reviews for the site
+ */
 
 export default router;

@@ -7,7 +7,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,  // Ensure your OpenAI API key is loaded correctly
 });
 
-async function fetchSiteInfo(siteName: string): Promise<String > {
+async function fetchSiteInfo(siteName: String): Promise<string > {
   if (!siteName) {
     throw new Error('Site name is required');
   }
@@ -27,10 +27,9 @@ async function fetchSiteInfo(siteName: string): Promise<String > {
       ],
     });
     
-    // Log the actual response content
     const content=response.choices[0].message.content || '';
     if (content) {
-      console.log(`Detected Landmark: ${content}`);
+      // console.log(`Detected Landmark: ${content}`);
       return  content;
     } else {
       console.warn("No landmark detected.");
