@@ -10,6 +10,7 @@
     "testUser": "jest --detectOpenHandles --forceExit --coverage test/user.test.ts",
     "testSiteInfoHistory": "jest --detectOpenHandles --forceExit --coverage test/siteInfoHistory.test.ts",
     "testSiteInfo": "jest --detectOpenHandles --forceExit --coverage test/siteInfo.test.ts",
+    "testChat": "jest --detectOpenHandles --forceExit --coverage test/chat.test.ts",
     "debug:site-detection": "ts-node ./src/test/scripts/testSiteDetection.ts"
   },
   "author": "",

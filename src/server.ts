@@ -4,6 +4,8 @@ dotenv.config();
 import mongoose from "mongoose";
 import authRoute from "./routes/auth_route";
 import userRoute from "./routes/user_route";
+import siteInfoHistoryRoute from './routes/siteInfoHistory_route';
+import chatRoute from './chat/routes/chat_route';
 import siteInfoRoute from './routes/siteInfo_route';
 import reviewsRoute from './routes/reviews_route';
 import siteInfoHistoryRoute from './routes/siteInfoHistory_route';
@@ -21,6 +23,7 @@ app.use('/reviews', reviewsRoute);
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
 app.use("/siteinfo_history", siteInfoHistoryRoute);
+app.use("/chats", chatRoute);
 
 const PORT = process.env.PORT || 3000;
 
@@ -34,7 +37,7 @@ const options = {
     },
     servers: [{ url: `http://10.10.248.134:${PORT}` }],
   },
-  apis: ["./src/routes/*.ts"],
+  apis: ["./src/routes/*.ts" , "./src/chat/routes/*.ts"],
 };
 const specs = swaggerJsDoc(options);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
