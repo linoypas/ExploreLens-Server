@@ -15,12 +15,12 @@ export const siteInformationController = async (req: Request, res: Response): Pr
   if(result.status == "success" || result.status == "assume"){
     const site = await siteInfoModel.findOne({ name: result.siteInformation?.siteName});
     if (site) {
-      result.id = site._id;
+      result.siteInfoId = site._id;
     } else {
       const newSite = await siteInfoModel.create({
         name: result.siteInformation?.siteName,
       });
-      result.id = newSite._id;
+      result.siteInfoId = newSite._id;
     }
   }
   res.status(200).json(result);
@@ -61,7 +61,7 @@ export const mockSiteInformation = async (req: Request, res: Response): Promise<
         y: centerY,
         siteName: "Eiffel Tower",
         },
-      id: siteId
+      siteInfoId: siteId
       }
   ]
   });

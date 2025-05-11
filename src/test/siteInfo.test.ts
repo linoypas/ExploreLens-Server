@@ -73,10 +73,10 @@ describe("siteInfo API", () => {
   it("POST /reviews/:siteId - should add a review to the siteInfo", async () => {
     const res = await request(app)
       .post(`/reviews/${siteId}`)
-      .send({ content: "Great place!", owner: "linoy" });
+      .send({ content: "Great place!", userId: "linoy" });
     expect(res.statusCode).toBe(201);
     expect(res.body.content).toBe("Great place!");
-    expect(res.body.owner).toBe("linoy");
+    expect(res.body.userId).toBe("linoy");
     reviewId = res.body._id;
   });
   it("PUT /reviews/:siteId/:reviewId - should update the review content", async () => {

@@ -4,8 +4,8 @@ import mongoose from "mongoose";
 import { fetchSiteInfo } from '../providers/gpt/siteInfoGPT';
 import siteInfoModel, { ISiteInfo } from "../models/siteInfo_model";
 import reviewModel, { IReview } from "../models/review_model";
-import { getImageUrl } from '../providers/imageUrl/siteInfoImageUrl';
-import {getReviews} from '../providers/reviews/googleReviews'
+import { getImageUrl } from '../providers/imageUrl/siteInfoImageUrl_provider';
+import {getReviews} from '../providers/reviews/googleReview_provider'
 
 class SiteInfoController extends BaseController<ISiteInfo> {
   constructor() {
@@ -53,7 +53,7 @@ class SiteInfoController extends BaseController<ISiteInfo> {
       } else {
         if(siteInfo){
         const googleData=await getReviews(siteInfo.name);
-        const providerData= await fetchSiteInfo(siteInfo.name);
+        const siteDescription = await fetchSiteInfo(siteInfo.name);
         const imageUrl= await getImageUrl(siteInfo.name)
         const ratings = (googleData || []).map((review, index) => ({
           userId: `google-${index}`, 
@@ -62,13 +62,13 @@ class SiteInfoController extends BaseController<ISiteInfo> {
         const averageRating = ratings.length > 0
         ? parseFloat((ratings.reduce((sum, r) => sum + r.value, 0) / ratings.length).toFixed(2))
         : 0;
-          siteInfo.description = providerData;
+          siteInfo.description = siteDescription;
           siteInfo.imageUrl = imageUrl;
           siteInfo.ratings = ratings;
           siteInfo.averageRating = averageRating;
           if (googleData && googleData.length > 0) {
             const googleReviews = googleData.map((review) => ({
-              owner: review.author_name,
+              userId: review.author_name,
               content: review.text,
               date: new Date(review.time * 1000),
               siteId: siteInfo._id,
@@ -77,7 +77,7 @@ class SiteInfoController extends BaseController<ISiteInfo> {
             const insertedReviews = await reviewModel.insertMany(googleReviews);
             const googleReviewsID = insertedReviews.map((review) => review._id);
 
-            siteInfo.reviews = googleReviewsID;
+            siteInfo.reviewsIds = googleReviewsID;
           }
         await siteInfo.save();
         res.status(200).json(siteInfo); 
@@ -111,9 +111,9 @@ class SiteInfoController extends BaseController<ISiteInfo> {
         siteInfo.ratings.push({ userId, value: rating }); 
       }
   
-      const total = siteInfo.ratings.reduce((sum, r) => sum + r.value, 0);
+      const sumOfTotalRating = siteInfo.ratings.reduce((sum, r) => sum + r.value, 0);
       const count = siteInfo.ratings.length;
-      siteInfo.averageRating = parseFloat((total / count).toFixed(2));
+      siteInfo.averageRating = parseFloat((sumOfTotalRating / count).toFixed(2));
   
       await siteInfo.save();
       res.status(200).send(siteInfo);

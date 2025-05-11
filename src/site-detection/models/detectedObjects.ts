@@ -21,7 +21,7 @@ export interface BoundingBox {
   export interface DetectionResult {
     status: 'success' | 'failure' | 'assume';
     description: string;
-    id?: string;
+    siteInfoId?: string;
     siteInformation?: {
       label: string;
       x: number;

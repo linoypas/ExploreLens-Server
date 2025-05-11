@@ -318,19 +318,19 @@ router.delete("/:siteId", siteInfoController.delete.bind(siteInfoController));
  *             properties:
  *               userId:
  *                 type: string
- *                 description: the id of the owner
+ *                 description: the id of the userId
  *               value:
  *                 type: number
  *                 description: the value of rating
  *         imageUrl: 
  *           type: string
  *           description: image url using UNSPLASH
- *         reviews:
+ *         reviewsIds:
  *           type: array
  *           items:
  *             type: object
  *             properties:
- *               owner:
+ *               userId:
  *                 type: string
  *                 description: User who left the review
  *               content:
