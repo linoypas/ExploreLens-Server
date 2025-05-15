@@ -101,7 +101,58 @@ const router = express.Router();
 router.get(
     "/categories",
     placeController.getCategories.bind(placeController)
-  ); 
+  );
+
+/**
+ * @swagger
+ * /places/nearby:
+ *   get:
+ *     summary: Get nearby places by categories
+ *     description: |
+ *       Retrieve all places within a fixed radius (e.g. 500 m) of the given latitude and longitude for one or more categories.
+ *       Categories must be one of the allowed values (Restaurant, Cafe, Bar, Bakery, Hotel, Pharmacy, Gym).
+ *     tags: [Places]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: lat
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Latitude of user's current location
+ *       - in: query
+ *         name: lng
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Longitude of user's current location
+ *       - in: query
+ *         name: categories
+ *         required: true
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description: |
+ *           One or more place types to search for.  
+ *           Allowed values: Restaurant, Cafe, Bar, Bakery, Hotel, Pharmacy, Gym
+ *     responses:
+ *       '200':
+ *         description: Array of places matching the criteria
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Place'
+ *       '400':
+ *         description: Invalid input (e.g. missing or malformed parameters)
+ *       '500':
+ *         description: Server error
+ */
+
+router.get("/nearby", authMiddleware, placeController.getNearbyPlacesByCategories.bind(placeController));   
 
 /**
  * @swagger
