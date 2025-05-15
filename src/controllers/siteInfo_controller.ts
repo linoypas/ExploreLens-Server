@@ -6,6 +6,8 @@ import siteInfoModel, { ISiteInfo } from "../models/siteInfo_model";
 import reviewModel, { IReview } from "../models/review_model";
 import { getImageUrl } from '../providers/imageUrl/siteInfoImageUrl_provider';
 import {getReviews} from '../providers/reviews/googleReview_provider'
+import { HydratedDocument } from "mongoose";
+
 
 class SiteInfoController extends BaseController<ISiteInfo> {
   constructor() {
@@ -49,41 +51,11 @@ class SiteInfoController extends BaseController<ISiteInfo> {
       const siteInfo = await this.model.findById(id);
       if (siteInfo && siteInfo.description) {
         res.status(200).send(siteInfo);
-        return;
+      } else if (siteInfo) {
+        const enriched = await this.enrichSiteInfo(siteInfo);
+        res.status(200).json(enriched);
       } else {
-        if(siteInfo){
-        const googleData=await getReviews(siteInfo.name);
-        const siteDescription = await fetchSiteInfo(siteInfo.name);
-        const imageUrl= await getImageUrl(siteInfo.name)
-        const ratings = (googleData || []).map((review, index) => ({
-          userId: `google-${index}`, 
-          value: review.rating
-        }));
-        const averageRating = ratings.length > 0
-        ? parseFloat((ratings.reduce((sum, r) => sum + r.value, 0) / ratings.length).toFixed(2))
-        : 0;
-          siteInfo.description = siteDescription;
-          siteInfo.imageUrl = imageUrl;
-          siteInfo.ratings = ratings;
-          siteInfo.averageRating = averageRating;
-          if (googleData && googleData.length > 0) {
-            const googleReviews = googleData.map((review) => ({
-              userId: review.author_name,
-              content: review.text,
-              date: new Date(review.time * 1000),
-              siteId: siteInfo._id,
-            }));
-    
-            const insertedReviews = await reviewModel.insertMany(googleReviews);
-            const googleReviewsID = insertedReviews.map((review) => review._id);
-
-            siteInfo.reviewsIds = googleReviewsID;
-          }
-        await siteInfo.save();
-        res.status(200).json(siteInfo); 
-        } else{
-          res.status(404).send({ error: "site not found" });
-        }
+        res.status(404).send({ error: "site not found" });      
       }
     } catch (error) {
       console.error(error);
@@ -157,6 +129,42 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     } catch (error) {
       res.status(400).send(error);
     }
+  }
+
+  private async enrichSiteInfo(siteInfo: HydratedDocument<ISiteInfo>): Promise<ISiteInfo> {
+    const googleData = await getReviews(siteInfo.name);
+    const siteDescription = await fetchSiteInfo(siteInfo.name);
+    const imageUrl = await getImageUrl(siteInfo.name);
+
+    const ratings = (googleData || []).map((review, index) => ({
+      userId: `google-${index}`,
+      value: review.rating,
+    }));
+
+    const averageRating = ratings.length > 0
+      ? parseFloat((ratings.reduce((sum, r) => sum + r.value, 0) / ratings.length).toFixed(2))
+      : 0;
+
+    siteInfo.description = siteDescription;
+    siteInfo.imageUrl = imageUrl;
+    siteInfo.ratings = ratings;
+    siteInfo.averageRating = averageRating;
+
+    if (googleData && googleData.length > 0) {
+      const googleReviews = googleData.map((review) => ({
+        userId: review.author_name,
+        content: review.text,
+        date: new Date(review.time * 1000),
+        siteId: siteInfo._id,
+      }));
+
+      const insertedReviews = await reviewModel.insertMany(googleReviews);
+      const googleReviewsID = insertedReviews.map((review) => review._id);
+      siteInfo.reviewsIds = googleReviewsID;
+    }
+
+    await siteInfo.save();
+    return siteInfo;
   }
 }  
 

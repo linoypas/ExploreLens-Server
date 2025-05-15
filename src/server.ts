@@ -8,6 +8,7 @@ import siteInfoRoute from './routes/siteInfo_route';
 import reviewsRoute from './routes/reviews_route';
 import siteInfoHistoryRoute from './routes/siteInfoHistory_route';
 import chatRoute from './chat/routes/chat_route';
+import placesRoute from './routes/places_route';
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 import bodyParser from "body-parser";
@@ -23,6 +24,7 @@ app.use("/auth", authRoute);
 app.use("/users", userRoute);
 app.use("/siteinfo_history", siteInfoHistoryRoute);
 app.use("/chats", chatRoute);
+app.use("/places", placesRoute);
 
 const PORT = process.env.PORT || 3000;
 
