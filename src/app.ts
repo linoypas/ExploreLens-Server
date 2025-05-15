@@ -12,11 +12,12 @@ initApp().then((app) => {
   } else{
     console.log('production')
     const options = {
-      key: fs.readFileSync('./client-key.pem'),
-      cert: fs.readFileSync('./client-cert.pem')
+      key: fs.readFileSync('../certs/client-key.pem'),
+      cert: fs.readFileSync('../certs/client-cert.pem')
     };
   https.createServer(options, app).listen(process.env.PORT);
   }
   }).catch((err) => {
     console.error(err);
     });
+

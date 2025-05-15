@@ -11,7 +11,8 @@
     "testSiteInfoHistory": "jest --detectOpenHandles --forceExit --coverage test/siteInfoHistory.test.ts",
     "testChat": "jest --detectOpenHandles --forceExit --coverage test/chat.test.ts",
     "testSiteInfo": "jest --detectOpenHandles --forceExit --coverage test/siteInfo.test.ts",
-    "debug:site-detection": "ts-node ./src/test/scripts/testSiteDetection.ts"
+    "debug:site-detection": "ts-node ./src/test/scripts/testSiteDetection.ts",
+    "build":"tsc"
   },
   "author": "",
   "license": "ISC",
