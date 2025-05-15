@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
 
 export interface ISiteInfoHistory {
-  siteInfoId: string;               
-  geohash: string;           
+  siteInfoId: string;  
+  geohash: string;    
+  longitude: string;                           
+  latitude: string;           
   userId: string;            
   createdAt?: Date;          
   _id?: string;              
@@ -14,6 +16,14 @@ const siteInfoHistorySchema = new mongoose.Schema<ISiteInfoHistory>({
     required: true
   },
   geohash: {
+    type: String,
+    required: true
+  },
+  longitude: {
+    type: String,
+    required: true
+  },
+  latitude: {
     type: String,
     required: true
   },
