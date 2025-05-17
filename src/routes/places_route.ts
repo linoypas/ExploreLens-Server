@@ -23,6 +23,7 @@ const router = express.Router();
  *         - location
  *         - rating
  *         - type
+ *         - elevation
  *       properties:
  *         name:
  *           type: string
@@ -30,6 +31,9 @@ const router = express.Router();
  *         location:
  *           type: object
  *           description: Geographic coordinates
+ *           required:
+ *             - lat
+ *             - lng
  *           properties:
  *             lat:
  *               type: number
@@ -43,6 +47,9 @@ const router = express.Router();
  *         type:
  *           type: string
  *           description: Category of the place
+ *         elevation:
+ *           type: number
+ *           description: Elevation in meters above sea level
  *         address:
  *           type: string
  *           description: Formatted address
@@ -70,7 +77,8 @@ const router = express.Router();
  *           lat: 40.712776
  *           lng: -74.005974
  *         rating: 4.3
- *         type: "Cafe"
+ *         type: "cafe"
+ *         elevation: 15.2
  *         address: "123 Broadway, New York, NY 10006, USA"
  *         phone_number: "+1 212-555-0123"
  *         business_status: "OPERATIONAL"

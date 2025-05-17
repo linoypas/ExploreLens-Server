@@ -6,7 +6,8 @@ export interface IPlace {
       lng: number;               
     };
     rating:   number;            
-    type:     string;            
+    type:     string;
+    elevation?: number;            
     address?: string;
     phone_number?: string;
     business_status?: string;
