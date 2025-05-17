@@ -50,6 +50,7 @@ class MockPlaceController {
           "Sunday: Closed",
         ],
       },
+      elevation:       20 + idx * 5
     }));
 
     res.status(200).send(places);
