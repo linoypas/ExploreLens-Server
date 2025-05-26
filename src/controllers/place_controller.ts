@@ -16,7 +16,7 @@ const ALLOWED_CATEGORIES = [
   "cafe",
   "bar",
   "bakery",
-  "hotel",
+  "lodging",
   "pharmacy",
   "gym"
 ];
@@ -89,10 +89,12 @@ class PlaceController {
     lng: number,
     category: string
   ): Promise<IPlace[]> {
+    const keywordParam = category === "lodging" ? "&keyword=hotel" : "";
     const url = `${NEARBY_SEARCH_URL}` +
                 `?location=${lat},${lng}` +
                 `&radius=${SEARCH_RADIUS}` +
                 `&type=${category}` +
+                `${keywordParam}` +
                 `&key=${GOOGLE_API_KEY}`;
     try {
       const resp = await axios.get(url);
