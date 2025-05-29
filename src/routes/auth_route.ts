@@ -1,5 +1,6 @@
 import express from "express";
 const router = express.Router();
+import { authMiddleware } from "../controllers/auth_controller";
 import authController from "../controllers/auth_controller";
 
 /**
@@ -224,5 +225,47 @@ router.post("/forgot", authController.forgotPassword);
  *         description: Invalid or expired token
  */
 router.post("/reset", authController.resetPassword);
+
+/**
+ * @swagger
+ * /auth/change-password:
+ *   post:
+ *     summary: Change the logged-in user’s password
+ *     tags:
+ *       - Auth
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *       400:
+ *         description: Missing fields or current password incorrect
+ *       401:
+ *         description: Access denied (invalid/missing token)
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
+router.post(
+  "/change-password",
+  authMiddleware,
+  authController.changePassword
+);
+
 
 export default router;

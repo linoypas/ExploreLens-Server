@@ -100,8 +100,41 @@ class SiteInfoHistoryController extends BaseController<ISiteInfoHistory> {
   }
 
   async create(req: Request, res: Response) {
+
+    const { siteInfoId, userId, geohash, longitude, latitude } = req.body;
+    if (!siteInfoId || !userId || !geohash || !longitude || !latitude) {
+      res.status(400).json({ error: "Missing required fields" });
+      return;
+    }
+
     try {
-      const newItem = await this.model.create(req.body);
+      const now = new Date();
+      const updated = await this.model.findOneAndUpdate(
+        { siteInfoId, userId },
+        {
+          $set: {
+            geohash,
+            longitude,
+            latitude,
+            createdAt: now,
+          },
+        },
+        { new: true }
+      );
+
+      if (updated) {
+        res.status(200).send(updated);
+        return;
+      }
+
+       const newItem = await this.model.create({
+        siteInfoId,
+        userId,
+        geohash,
+        longitude,
+        latitude,
+        createdAt: now,
+      });
       res.status(201).send(newItem);
     } catch (error) {
       res.status(400).send(error);

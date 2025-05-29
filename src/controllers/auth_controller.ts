@@ -324,6 +324,39 @@ const refresh = async (req: Request, res: Response) => {
     }
 };
 
+const changePassword = async (req: Request, res: Response) => {
+  const userId = req.params.userId as string;
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    res.status(400).send({ message: 'Missing currentPassword or newPassword' });
+    return;
+  }
+
+  try {
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      res.status(404).send({ message: 'User not found' });
+      return;
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      res.status(400).send({ message: 'Current password is incorrect' });
+      return;
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    res.status(200).send({ message: 'Password changed successfully' });
+  } catch (err) {
+    console.error('Error changing password:', err);
+    res.status(500).send({ message: 'Server error' });
+  }
+};
+
+
 type Payload = {
     _id: string;
 };
@@ -359,4 +392,5 @@ export default {
     googleSignin,
     forgotPassword,
     resetPassword,
+    changePassword,
 };

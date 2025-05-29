@@ -168,7 +168,10 @@ router.get("/:id", siteInfoHistoryController.getById.bind(siteInfoHistoryControl
  * @swagger
  * /siteinfo_history:
  *   post:
- *     summary: Create a new record
+ *     summary: Create or update a site-visit record
+ *     description: |
+ *       If a record with the same `siteInfoId` and `userId` already exists, its `geohash`, `longitude`, `latitude`, and `createdAt`
+ *       will be updated (returns **200**). Otherwise a new record is created (returns **201**).
  *     tags: [SiteInfoHistory]
  *     security:
  *       - bearerAuth: []
@@ -177,10 +180,49 @@ router.get("/:id", siteInfoHistoryController.getById.bind(siteInfoHistoryControl
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/SiteInfoHistory'
+ *             type: object
+ *             required:
+ *               - siteInfoId
+ *               - userId
+ *               - geohash
+ *               - longitude
+ *               - latitude
+ *             properties:
+ *               siteInfoId:
+ *                 type: string
+ *               userId:
+ *                 type: string
+ *               geohash:
+ *                 type: string
+ *               longitude:
+ *                 type: string
+ *               latitude:
+ *                 type: string
+ *             example:
+ *               siteInfoId: "6123456789abcdef01234567"
+ *               userId:     "6831a9e5e86745c5a3d16df4"
+ *               geohash:    "sv8wrh7z"
+ *               longitude:  "12.4924"
+ *               latitude:   "41.8902"
  *     responses:
+ *       200:
+ *         description: Existing record updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SiteInfoHistory'
  *       201:
- *         description: Created successfully
+ *         description: New record created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SiteInfoHistory'
+ *       400:
+ *         description: Validation error (missing or malformed fields)
+ *       409:
+ *         description: Duplicate key conflict
+ *       500:
+ *         description: Server error
  */
 router.post("/", authMiddleware, siteInfoHistoryController.create.bind(siteInfoHistoryController));
 

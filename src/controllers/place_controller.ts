@@ -8,6 +8,7 @@ import { IPlace } from "../models/place_model";
 const GOOGLE_API_KEY    = process.env.GOOGLE_PLACES_API_KEY!;
 const NEARBY_SEARCH_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
 const PLACE_DETAILS_URL = "https://maps.googleapis.com/maps/api/place/details/json";
+const ELEVATION_URL = "https://maps.googleapis.com/maps/api/elevation/json";
 const SEARCH_RADIUS     = 500;
 
 const ALLOWED_CATEGORIES = [
@@ -15,7 +16,7 @@ const ALLOWED_CATEGORIES = [
   "cafe",
   "bar",
   "bakery",
-  "hotel",
+  "lodging",
   "pharmacy",
   "gym"
 ];
@@ -88,10 +89,12 @@ class PlaceController {
     lng: number,
     category: string
   ): Promise<IPlace[]> {
+    const keywordParam = category === "lodging" ? "&keyword=hotel" : "";
     const url = `${NEARBY_SEARCH_URL}` +
                 `?location=${lat},${lng}` +
                 `&radius=${SEARCH_RADIUS}` +
                 `&type=${category}` +
+                `${keywordParam}` +
                 `&key=${GOOGLE_API_KEY}`;
     try {
       const resp = await axios.get(url);
@@ -111,6 +114,21 @@ class PlaceController {
       return [];
     }
   }
+
+  private async fetchElevation(lat: number, lng: number): Promise<number|undefined> {
+  try {
+    const resp = await axios.get(ELEVATION_URL, {
+      params: {
+        locations: `${lat},${lng}`,
+        key: GOOGLE_API_KEY
+      }
+    });
+    const result = resp.data.results?.[0];
+    return result?.elevation;
+  } catch {
+    return undefined;
+  }
+}
 
   private async enrichPlaces(places: IPlace[]): Promise<IPlace[]> {
     return Promise.all(
@@ -138,6 +156,10 @@ class PlaceController {
           }
         } catch {
           // ignore individual enrichment failures
+        }
+        const elev = await this.fetchElevation(place.location.lat, place.location.lng);
+        if (elev != null) {
+          place.elevation = elev;
         }
         return place;
       })

@@ -23,6 +23,7 @@ const router = express.Router();
  *         - location
  *         - rating
  *         - type
+ *         - elevation
  *       properties:
  *         name:
  *           type: string
@@ -30,6 +31,9 @@ const router = express.Router();
  *         location:
  *           type: object
  *           description: Geographic coordinates
+ *           required:
+ *             - lat
+ *             - lng
  *           properties:
  *             lat:
  *               type: number
@@ -43,6 +47,9 @@ const router = express.Router();
  *         type:
  *           type: string
  *           description: Category of the place
+ *         elevation:
+ *           type: number
+ *           description: Elevation in meters above sea level
  *         address:
  *           type: string
  *           description: Formatted address
@@ -70,7 +77,8 @@ const router = express.Router();
  *           lat: 40.712776
  *           lng: -74.005974
  *         rating: 4.3
- *         type: "Cafe"
+ *         type: "cafe"
+ *         elevation: 15.2
  *         address: "123 Broadway, New York, NY 10006, USA"
  *         phone_number: "+1 212-555-0123"
  *         business_status: "OPERATIONAL"
@@ -96,7 +104,7 @@ const router = express.Router();
  *               type: array
  *               items:
  *                 type: string
- *               example: ["restaurant","cafe","bar","bakery","hotel","pharmacy","gym"]
+ *               example: ["restaurant","cafe","bar","bakery","lodging","pharmacy","gym"]
  */
 router.get(
     "/categories",
@@ -110,7 +118,7 @@ router.get(
  *     summary: Get nearby places by categories
  *     description: |
  *       Retrieve all places within a fixed radius (e.g. 500 m) of the given latitude and longitude for one or more categories.
- *       Categories must be one of the allowed values (Restaurant, Cafe, Bar, Bakery, Hotel, Pharmacy, Gym).
+ *       Categories must be one of the allowed values (Restaurant, Cafe, Bar, Bakery, Lodging, Pharmacy, Gym).
  *     tags: [Places]
  *     security:
  *       - bearerAuth: []
@@ -136,7 +144,7 @@ router.get(
  *             type: string
  *         description: |
  *           One or more place types to search for.  
- *           Allowed values: Restaurant, Cafe, Bar, Bakery, Hotel, Pharmacy, Gym
+ *           Allowed values: restaurant, cafe, bar, bakery, lodging, pharmacy, gym
  *     responses:
  *       '200':
  *         description: Array of places matching the criteria
