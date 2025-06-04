@@ -4,7 +4,8 @@ export interface IUserStatistics {
   userId: string;
   percentageVisited: string;
   countryCount: number;    
-  continents: string[];     
+  continents: string[];    
+  countries: string[]; 
   siteCount: number;       
   createdAt?: Date;
   _id?: string;
@@ -26,6 +27,10 @@ const userStatisticsSchema = new mongoose.Schema<IUserStatistics>(
       required: true
     },
     continents: {
+      type: [String],
+      required: true
+    },
+    countries: {
       type: [String],
       required: true
     },

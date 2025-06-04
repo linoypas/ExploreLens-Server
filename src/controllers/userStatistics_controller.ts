@@ -14,6 +14,7 @@ class UserStatisticsController {
             const percentageVisited = await this.calculatePercentageVisited(sitesListString);
             const countryCount       = await this.calculateCountryCount(sitesListString);
             const continents         = await this.calculateContinents(sitesListString);
+            const countries          = await this.calculateCountriesList(sitesListString);
             const siteCount          = visitedSiteNames.length;
 
             const userStatistics: IUserStatistics = {
@@ -21,6 +22,7 @@ class UserStatisticsController {
                 percentageVisited,
                 countryCount,
                 continents,
+                countries,
                 siteCount
             };
 
@@ -63,6 +65,32 @@ Please reply with exactly one percentage (for example "12.3%"), and nothing else
 
     return await askUserStatisticsGPT(prompt);
   }
+
+private async calculateCountriesList(sitesListString: string): Promise<string[]> {
+  const prompt = `
+I have visited these historical sites:
+${sitesListString}
+
+Please tell me the distinct country names where these sites are located.
+Reply with a comma-separated list of country names only
+(e.g. "France, Japan, United States").
+  `.trim();
+
+  const reply = await askUserStatisticsGPT(prompt);
+  const countries = reply
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  if (countries.length === 0) {
+    throw {
+      status: 500,
+      message: `Invalid countries list from GPT: "${reply}"`
+    };
+  }
+
+  return countries;
+}  
 
   private async calculateCountryCount(sitesListString: string): Promise<number> {
     const prompt = `
