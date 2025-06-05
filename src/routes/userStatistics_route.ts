@@ -22,6 +22,7 @@ const router = express.Router();
  *         - percentageVisited
  *         - countryCount
  *         - continents
+ *         - countries
  *         - siteCount
  *       properties:
  *         _id:
@@ -41,6 +42,11 @@ const router = express.Router();
  *           items:
  *             type: string
  *           description: List of continents visited
+ *         countries:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: List of country names visited
  *         siteCount:
  *           type: integer
  *           description: Total number of sites visited
@@ -53,6 +59,7 @@ const router = express.Router();
  *         percentageVisited: "1.5%"
  *         countryCount: 3
  *         continents: ["Europe","Asia"]
+ *         countries: ["France", "Japan", "United States"]
  *         siteCount: 42
  *         createdAt: "2025-05-23T12:34:56.789Z"
  */
