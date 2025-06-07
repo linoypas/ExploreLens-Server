@@ -18,5 +18,12 @@ export interface IPlace {
       open_now?: boolean;
       weekday_text?: string[];
     };
+    reviews?: Array<{
+    author_name:             string;
+    rating:                  number;
+    relative_time_description: string;
+    text:                    string;
+    time:                    number;  
+  }>;
   }
   

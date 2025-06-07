@@ -80,6 +80,23 @@ const router = express.Router();
  *           type: integer
  *           format: int32
  *           description: Price level (0 free — 4 very expensive)
+ *         reviews:
+ *           type: array
+ *           description: Top user reviews for the place
+ *           items:
+ *             type: object
+ *             properties:
+ *               author_name:
+ *                 type: string
+ *               rating:
+ *                 type: number
+ *               relative_time_description:
+ *                 type: string
+ *               text:
+ *                 type: string
+ *               time:
+ *                 type: integer
+ *                 description: Unix timestamp
  *       example:
  *         name: "Joe's Coffee"
  *         location:
@@ -98,6 +115,12 @@ const router = express.Router();
  *         editorial_summary: "A cozy neighborhood coffee shop known for artisanal espresso."
  *         website: "https://joescoffee.example.com"
  *         price_level: 2
+ *         reviews:
+ *           - author_name: "Alice"
+ *             rating: 5
+ *             relative_time_description: "2 weeks ago"
+ *             text: "Fantastic vibes and great lattes!"
+ *             time: 1616161616
  */
 
 /**
