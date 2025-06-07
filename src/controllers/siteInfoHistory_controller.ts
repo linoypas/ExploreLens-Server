@@ -168,6 +168,17 @@ class SiteInfoHistoryController extends BaseController<ISiteInfoHistory> {
       res.status(400).send(error);
     }
   }
+
+  public async deleteAllByUserId(req: Request, res: Response) {
+    const { userId } = req.params;
+    try {
+      const result = await this.model.deleteMany({ userId });
+      res.status(200).send({ deletedCount: result.deletedCount });
+    } catch (error) {
+      console.error("deleteAllByUserId error:", error);
+      res.status(500).send({ error: "Server error" });
+    }
+  }
 }
 
 export default new SiteInfoHistoryController();
