@@ -7,6 +7,9 @@ export interface IPlace {
     };
     rating:   number;            
     type:     string;
+    editorial_summary?: string;
+    website?: string;
+    price_level?: number;
     elevation?: number;            
     address?: string;
     phone_number?: string;

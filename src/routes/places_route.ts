@@ -1,7 +1,6 @@
 import express from "express";
 import { authMiddleware } from "../controllers/auth_controller";
 import placeController from "../controllers/place_controller";
-import MockPlaceController from "../controllers/mockPlace_controller";
 
 const router = express.Router();
 
@@ -71,6 +70,16 @@ const router = express.Router();
  *               items:
  *                 type: string
  *               description: Human-readable opening hours per weekday
+ *         editorial_summary:
+ *           type: string
+ *           description: Google’s short, human-written summary of the place
+ *         website:
+ *           type: string
+ *           description: The place’s official website URL
+ *         price_level:
+ *           type: integer
+ *           format: int32
+ *           description: Price level (0 free — 4 very expensive)
  *       example:
  *         name: "Joe's Coffee"
  *         location:
@@ -86,7 +95,9 @@ const router = express.Router();
  *           open_now: true
  *           weekday_text:
  *             - "Monday: 7:00 AM – 8:00 PM"
- *             - "Tuesday: 7:00 AM – 8:00 PM"
+ *         editorial_summary: "A cozy neighborhood coffee shop known for artisanal espresso."
+ *         website: "https://joescoffee.example.com"
+ *         price_level: 2
  */
 
 /**
@@ -107,9 +118,9 @@ const router = express.Router();
  *               example: ["restaurant","cafe","bar","bakery","lodging","pharmacy","gym"]
  */
 router.get(
-    "/categories",
-    placeController.getCategories.bind(placeController)
-  );
+  "/categories",
+  placeController.getCategories.bind(placeController)
+);
 
 /**
  * @swagger
@@ -161,50 +172,5 @@ router.get(
  */
 
 router.get("/nearby", authMiddleware, placeController.getNearbyPlacesByCategories.bind(placeController));   
-
-/**
- * @swagger
- * /places/nearby/mock:
- *   get:
- *     summary: Get mock nearby places by categories
- *     description: Returns one fake place per category for testing.
- *     tags: [Places]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: lat
- *         schema:
- *           type: number
- *         required: true
- *         description: Latitude
- *       - in: query
- *         name: lng
- *         schema:
- *           type: number
- *         required: true
- *         description: Longitude
- *       - in: query
- *         name: categories
- *         schema:
- *           type: array
- *           items:
- *             type: string
- *         required: true
- *         description: Array of allowed place types
- *     responses:
- *       200:
- *         description: Array of mock places
- *       400:
- *         description: Validation error
- *       500:
- *         description: Server error
- */
-router.get(
-    "/nearby/mock",
-    authMiddleware,
-    MockPlaceController.getNearbyPlacesByCategories.bind(MockPlaceController)
-  );
-  
 
 export default router;

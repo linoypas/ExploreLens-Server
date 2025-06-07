@@ -136,10 +136,12 @@ class PlaceController {
         const placeId = (place as any).place_id;
         if (!placeId) return place;
 
-        const url = `${PLACE_DETAILS_URL}` +
-                    `?place_id=${placeId}` +
-                    `&fields=formatted_address,international_phone_number,business_status,opening_hours` +
-                    `&key=${GOOGLE_API_KEY}`;
+      const url = `${PLACE_DETAILS_URL}` +
+                  `?place_id=${placeId}` +
+                  `&fields=formatted_address,international_phone_number,` +
+                  `business_status,opening_hours,editorial_summary,website,price_level` +
+                  `&key=${GOOGLE_API_KEY}`;
+
         try {
           const resp = await axios.get(url);
           const r = resp.data.result;
@@ -153,6 +155,18 @@ class PlaceController {
                 weekday_text: r.opening_hours.weekday_text
               };
             }
+
+            if (r.editorial_summary?.overview) {
+            place.editorial_summary = r.editorial_summary.overview;
+          }
+
+          if (r.website) {
+            place.website = r.website;
+          }
+
+          if (typeof r.price_level === "number") {
+            place.price_level = r.price_level;
+          }
           }
         } catch {
           // ignore individual enrichment failures
