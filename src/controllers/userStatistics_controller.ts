@@ -14,14 +14,12 @@ class UserStatisticsController {
             const percentageVisited = await this.calculatePercentageVisited(sitesListString);
             const countries          = await this.calculateCountriesList(sitesListString);
             const countryCount       = countries.length;
-            const continents         = await this.calculateContinents(sitesListString);
             const siteCount          = visitedSiteNames.length;
 
             const userStatistics: IUserStatistics = {
                 userId,
                 percentageVisited,
                 countryCount,
-                continents,
                 countries,
                 siteCount
             };
@@ -84,32 +82,6 @@ Reply with a comma-separated list of country names only
 
   return countries;
 }  
-
-  private async calculateContinents(sitesListString: string): Promise<string[]> {
-  const prompt = `
-I have visited these historical sites:
-${sitesListString}
-
-Please tell me the distinct continents where these sites are located.
-Reply with a comma-separated list of continent names only
-(e.g. "Europe, Asia").
-`.trim();
-
-  const reply = await askUserStatisticsGPT(prompt);
-  const continents = reply
-    .split(",")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
-
-  if (continents.length === 0) {
-    throw {
-      status: 500,
-      message: `Invalid continents list from GPT: "${reply}"`
-    };
-  }
-
-  return continents;
-}
 
 }
 
