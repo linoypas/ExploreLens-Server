@@ -12,9 +12,9 @@ class UserStatisticsController {
             const sitesListString = visitedSiteNames.map((n) => `- ${n}`).join("\n");
 
             const percentageVisited = await this.calculatePercentageVisited(sitesListString);
-            const countryCount       = await this.calculateCountryCount(sitesListString);
-            const continents         = await this.calculateContinents(sitesListString);
             const countries          = await this.calculateCountriesList(sitesListString);
+            const countryCount       = countries.length;
+            const continents         = await this.calculateContinents(sitesListString);
             const siteCount          = visitedSiteNames.length;
 
             const userStatistics: IUserStatistics = {
@@ -45,13 +45,6 @@ class UserStatisticsController {
       .lean<{ _id: string; name: string }[]>();
     return sites.map((s) => s.name);
   }
-
-  private buildPromptList(items: string[]): string {
-  if (items.length === 0) {
-    return "- (none)";
-  }
-  return items.map((i) => `- ${i}`).join("\n");
- }
 
    private async calculatePercentageVisited(sitesListString: string): Promise<string> {
     const prompt = `
@@ -91,23 +84,6 @@ Reply with a comma-separated list of country names only
 
   return countries;
 }  
-
-  private async calculateCountryCount(sitesListString: string): Promise<number> {
-    const prompt = `
-I have visited these historical sites:
-${sitesListString}
-
-Please tell me how many distinct countries these sites are located in.
-Reply with exactly one integer (for example: “5”) and nothing else.
-`.trim();
-
-    const reply = await askUserStatisticsGPT(prompt);
-    const parsed = parseInt(reply.replace(/[^\d]/g, ""), 10);
-    if (isNaN(parsed)) {
-      throw { status: 500, message: `Invalid country count from GPT: "${reply}"` };
-    }
-    return parsed;
-  }
 
   private async calculateContinents(sitesListString: string): Promise<string[]> {
   const prompt = `
