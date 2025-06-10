@@ -7,6 +7,9 @@ export interface IPlace {
     };
     rating:   number;            
     type:     string;
+    editorial_summary?: string;
+    website?: string;
+    price_level?: number;
     elevation?: number;            
     address?: string;
     phone_number?: string;
@@ -15,5 +18,12 @@ export interface IPlace {
       open_now?: boolean;
       weekday_text?: string[];
     };
+    reviews?: Array<{
+    author_name:             string;
+    rating:                  number;
+    relative_time_description: string;
+    text:                    string;
+    time:                    number;  
+  }>;
   }
   
