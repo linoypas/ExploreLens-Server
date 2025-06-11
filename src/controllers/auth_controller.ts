@@ -68,7 +68,8 @@ const googleSignin = async (req: Request, res: Response): Promise<void> => {
                 {
                     accessToken: tokens.accessToken,
                     refreshToken: tokens.refreshToken,
-                    _id: user._id
+                    _id: user._id,
+                    isSignedWithGoogle: true
                 });
         }
    } catch (err) {
@@ -115,6 +116,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
         _id: newUser._id,
+        isSignedWithGoogle: false
       });
     } catch (err) {
       console.error('Error during registration:', err);
@@ -182,6 +184,7 @@ const login = async (req: Request, res: Response) => {
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
         _id: user._id,
+        isSignedWithGoogle: false
       });
     } catch (err) {
       res.status(400).send(err);
