@@ -52,17 +52,27 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     try {
       const siteInfo = await this.model.findById(id);
       if (siteInfo && siteInfo.description) {
-        const meta = await this.getMeta(id);
-        if (this.needsRefresh(meta.lastVisit)) {
-            await this.fetchAndMergeGoogleReviews(siteInfo);
+
+        try 
+          {
+            const meta = await this.getMeta(id);
+            if (this.needsRefresh(meta.lastVisit)) {
+                await this.fetchAndMergeGoogleReviews(siteInfo);
+              }
+            meta.lastVisit = new Date();
+            await meta.save();
           }
-        meta.lastVisit = new Date();
-        await meta.save();
+        catch (err) {
+          console.error('Meta refresh error:', err);          
+        }
+
         res.status(200).send(siteInfo);
-      } else if (siteInfo) {
+      }
+      else if (siteInfo) {
         const enriched = await this.enrichSiteInfo(siteInfo);
         res.status(200).json(enriched);
-      } else {
+      }
+       else {
         res.status(404).send({ error: "site not found" });      
       }
     } catch (error) {
