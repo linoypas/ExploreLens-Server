@@ -136,22 +136,45 @@ class PlaceController {
         const placeId = (place as any).place_id;
         if (!placeId) return place;
 
-        const url = `${PLACE_DETAILS_URL}` +
-                    `?place_id=${placeId}` +
-                    `&fields=formatted_address,international_phone_number,business_status,opening_hours` +
-                    `&key=${GOOGLE_API_KEY}`;
+const url = `${PLACE_DETAILS_URL}` +
+              `?place_id=${placeId}` +
+              `&fields=formatted_address,international_phone_number,` +
+               `business_status,opening_hours,editorial_summary,website,price_level,reviews` + 
+              `&key=${GOOGLE_API_KEY}`;
+
         try {
           const resp = await axios.get(url);
           const r = resp.data.result;
           if (r) {
-            place.address         = r.formatted_address;
-            place.phone_number    = r.international_phone_number;
-            place.business_status = r.business_status;
-            if (r.opening_hours) {
-              place.opening_hours = {
-                open_now:      r.opening_hours.open_now,
-                weekday_text: r.opening_hours.weekday_text
-              };
+              place.address         = r.formatted_address;
+              place.phone_number    = r.international_phone_number;
+              place.business_status = r.business_status;
+              if (r.opening_hours) {
+                place.opening_hours = {
+                  open_now:      r.opening_hours.open_now,
+                  weekday_text: r.opening_hours.weekday_text
+                };
+              }
+
+              if (r.editorial_summary?.overview) {
+              place.editorial_summary = r.editorial_summary.overview;
+            }
+
+            if (r.website) {
+              place.website = r.website;
+            }
+
+            if (typeof r.price_level === "number") {
+              place.price_level = r.price_level;
+            }
+            if (Array.isArray(r.reviews) && r.reviews.length) {
+              place.reviews = r.reviews.map((rev: any) => ({
+                author_name:              rev.author_name,
+                rating:                   rev.rating,
+                relative_time_description: rev.relative_time_description,
+                text:                     rev.text,
+                time:                     rev.time
+              }));
             }
           }
         } catch {

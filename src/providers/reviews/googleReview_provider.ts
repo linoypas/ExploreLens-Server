@@ -37,6 +37,7 @@ export const getReviews = async (siteName: string): Promise<IGoogleReview[] | nu
         params: {
           place_id: placeId,
           fields: 'reviews',
+          reviews_sort: 'newest',
           key: API_KEY,
         },
       });
@@ -44,7 +45,7 @@ export const getReviews = async (siteName: string): Promise<IGoogleReview[] | nu
       const reviews: IGoogleReview[] = response.data.result?.reviews || [];
   
       if (reviews.length === 0) {
-        console.log('ℹ️ No reviews found for:', siteName);
+        console.log('No reviews found for:', siteName);
         return [];
       }
   

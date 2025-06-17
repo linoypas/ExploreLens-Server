@@ -276,4 +276,40 @@ router.put("/:id", authMiddleware, siteInfoHistoryController.update.bind(siteInf
  */
 router.delete("/:id", authMiddleware, siteInfoHistoryController.delete.bind(siteInfoHistoryController));
 
+/**
+ * @swagger
+ * /siteinfo_history/user/{userId}:
+ *   delete:
+ *     summary: Delete all site-history records for a user
+ *     tags: [SiteInfoHistory]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user whose history should be deleted
+ *     responses:
+ *       200:
+ *         description: Number of deleted records
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 deletedCount:
+ *                   type: integer
+ *       400:
+ *         description: Invalid user ID
+ *       500:
+ *         description: Server error
+ */
+router.delete(
+  "/user/:userId",
+  authMiddleware,
+  siteInfoHistoryController.deleteAllByUserId.bind(siteInfoHistoryController)
+);
+
 export default router;

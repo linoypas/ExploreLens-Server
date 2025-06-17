@@ -7,7 +7,9 @@ import reviewModel, { IReview } from "../models/review_model";
 import { getImageUrl } from '../providers/imageUrl/siteInfoImageUrl_provider';
 import {getReviews} from '../providers/reviews/googleReview_provider'
 import { HydratedDocument } from "mongoose";
+import siteInfoMetaModel from "../models/siteInfoMeta_model";
 
+const REFRESH_INTERVAL_MS = 2 * 24 * 60 * 60 * 1000;
 
 class SiteInfoController extends BaseController<ISiteInfo> {
   constructor() {
@@ -50,11 +52,27 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     try {
       const siteInfo = await this.model.findById(id);
       if (siteInfo && siteInfo.description) {
+
+        try 
+          {
+            const meta = await this.getMeta(id);
+            if (this.needsRefresh(meta.lastVisit)) {
+                await this.fetchAndMergeGoogleReviews(siteInfo);
+              }
+            meta.lastVisit = new Date();
+            await meta.save();
+          }
+        catch (err) {
+          console.error('Meta refresh error:', err);          
+        }
+
         res.status(200).send(siteInfo);
-      } else if (siteInfo) {
+      }
+      else if (siteInfo) {
         const enriched = await this.enrichSiteInfo(siteInfo);
         res.status(200).json(enriched);
-      } else {
+      }
+       else {
         res.status(404).send({ error: "site not found" });      
       }
     } catch (error) {
@@ -131,6 +149,64 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     }
   }
 
+  private async getMeta(siteId: string) {
+    const meta = await siteInfoMetaModel.findOne({ siteId });
+    if (meta) return meta;
+    return siteInfoMetaModel.create({
+      siteId,
+      lastVisit: new Date(0),     
+    });
+  }
+
+  private needsRefresh(lastVisit: Date) {
+  return Date.now() - lastVisit.getTime() >= REFRESH_INTERVAL_MS;
+}
+
+private async fetchAndMergeGoogleReviews(site: HydratedDocument<ISiteInfo>) {
+  const googleData = await getReviews(site.name);
+  if (!googleData?.length) return;
+
+  const existing = await reviewModel
+    .find({ siteId: site._id })
+    .select('userId date')
+    .lean();
+
+  const existingKeys = new Set(
+    existing.map(r => `${r.userId}-${r.date.getTime()}`)
+  );
+
+  const newcomers = googleData.filter(
+    r =>
+      r.text?.trim() &&                                
+      !existingKeys.has(`${r.author_name}-${r.time * 1000}`)
+  );
+  if (!newcomers.length) return;
+
+  const startingIndex = site.ratings.length;
+  newcomers.forEach((r, idx) =>
+    site.ratings.push({
+      userId: `google-${startingIndex + idx}`,
+      value:  r.rating,
+    })
+  );
+
+  const avg =
+    site.ratings.reduce((s, r) => s + r.value, 0) / site.ratings.length;
+  site.averageRating = Number(avg.toFixed(2));
+
+  const inserted = await reviewModel.insertMany(
+    newcomers.map(r => ({
+      userId:  r.author_name,
+      content: r.text,                         
+      date:    new Date(r.time * 1000),
+      siteId:  site._id,
+    }))
+  );
+  site.reviewsIds.push(...inserted.map(r => r._id));
+
+  await site.save();
+}
+
   private async enrichSiteInfo(siteInfo: HydratedDocument<ISiteInfo>): Promise<ISiteInfo> {
     const googleData = await getReviews(siteInfo.name);
     const siteDescription = await fetchSiteInfo(siteInfo.name);
@@ -151,11 +227,12 @@ class SiteInfoController extends BaseController<ISiteInfo> {
     siteInfo.averageRating = averageRating;
 
     if (googleData && googleData.length > 0) {
-      const googleReviews = googleData.map((review) => ({
-        userId: review.author_name,
-        content: review.text,
-        date: new Date(review.time * 1000),
-        siteId: siteInfo._id,
+      const googleReviews = googleData.filter(r => r.text?.trim())                 
+        .map(r => ({
+          userId:  r.author_name,
+          content: r.text,                    
+          date:    new Date(r.time * 1000),
+          siteId:  siteInfo._id,
       }));
 
       const insertedReviews = await reviewModel.insertMany(googleReviews);
