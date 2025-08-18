@@ -52,7 +52,9 @@ describe("SiteInfoHistory API", () => {
       .send({
         siteInfoId: mockSiteId,
         geohash: mockGeoHash,
-        userId: testUser._id
+        userId: testUser._id,
+        longitude: 2.2945,
+        latitude: 48.8584
       });
 
     expect(response.statusCode).toBe(201);
