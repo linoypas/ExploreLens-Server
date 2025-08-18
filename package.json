@@ -4,13 +4,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./src/app.ts",
-    "start": "tsc && node ./dist/src/app.js",
+    "start": "cp .envprod .env && tsc -p tsconfig.json && pm2 restart ecosystem.config.js --env production",
     "test": "jest --detectOpenHandles --forceExit --runInBand",
     "testAuth": "jest --detectOpenHandles --forceExit --coverage test/auth.test.ts",
     "testUser": "jest --detectOpenHandles --forceExit --coverage test/user.test.ts",
     "testSiteInfoHistory": "jest --detectOpenHandles --forceExit --coverage test/siteInfoHistory.test.ts",
     "testChat": "jest --detectOpenHandles --forceExit --coverage test/chat.test.ts",
     "testSiteInfo": "jest --detectOpenHandles --forceExit --coverage test/siteInfo.test.ts",
+    "build":"tsc",
     "testFiles": "jest --detectOpenHandles --forceExit --coverage test/file.test.ts",
     "testPasswordReset": "jest --detectOpenHandles --forceExit --coverage test/passwordReset.test.ts",
     "debug:site-detection": "ts-node ./src/test/scripts/testSiteDetection.ts"
