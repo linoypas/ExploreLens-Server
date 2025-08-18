@@ -128,12 +128,12 @@ describe("Auth Tests", () => {
   });
   
 
-  test("Forgot password returns token", async () => {
+  test("Forgot password sends email", async () => {
     const response = await request(app)
       .post(baseUrl + "/forgot")
       .send({ email: testUser.email });
     expect(response.statusCode).toBe(200);
-    expect(response.body.resetToken).toBeDefined();
+    expect(response.body.message).toBe("Password reset code sent to your email");
   });
 
   test("Forgot password invalid email", async () => {
