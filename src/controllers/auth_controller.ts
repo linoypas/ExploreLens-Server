@@ -1,12 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 import UserModel, { IUser } from '../models/user_model';
+import PasswordResetModel from '../models/passwordReset_model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Document } from 'mongoose';
 import { OAuth2Client } from 'google-auth-library';
+import { sendPasswordResetEmail } from '../providers/email_provider';
 
 
 const client = new OAuth2Client();
+
+const generateResetCode = (): string => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
 
 const checkUsernameInDb = async(username: string) => {
     const user = await UserModel.findOne({ username });
@@ -192,38 +198,76 @@ const login = async (req: Request, res: Response) => {
   };
 
 const forgotPassword = async (req: Request, res: Response) => {
-const { email } = req.body;
-try {
-    const user = await UserModel.findOne({ email });
-    if (!user) {
-    res.status(404).json({ message: 'User not found' });
-    return;
+    const { email } = req.body;
+    try {
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+
+        const resetCode = generateResetCode();
+        
+        const expiresAt = new Date();
+        expiresAt.setMinutes(expiresAt.getMinutes() + 15);
+
+        await PasswordResetModel.create({
+            email,
+            code: resetCode,
+            expiresAt,
+            isUsed: false
+        });
+
+        const emailSent = await sendPasswordResetEmail(email, resetCode);
+        
+        if (!emailSent) {
+            res.status(500).json({ message: 'Failed to send reset email' });
+            return;
+        }
+
+        res.status(200).json({ message: 'Password reset code sent to your email' });
+    } catch (error) {
+        console.error('Error generating password reset code:', error);
+        res.status(500).json({ message: 'Server error' });
     }
-
-    const resetToken = jwt.sign(
-    { _id: user._id },
-    process.env.TOKEN_SECRET as string,
-    { expiresIn: '15m' }
-    );
-
-    res.status(200).json({ message: 'Token generated', resetToken });
-} catch (error) {
-    console.error('Error generating password reset token:', error);
-    res.status(500).json({ message: 'Server error' });
-}
 };
   
 const resetPassword = async (req: Request, res: Response) => {
-const { token, newPassword } = req.body;
-try {
-    const payload = jwt.verify(token, process.env.TOKEN_SECRET as string) as { _id: string };
-    const hashed = await bcrypt.hash(newPassword, 10);
-    await UserModel.findByIdAndUpdate(payload._id, { password: hashed });
-    res.status(200).json({ message: 'Password updated successfully' });
-} catch (err) {
-    console.error('Reset error:', err);
-    res.status(400).json({ message: 'Invalid or expired token' });
-}
+    const { email, code, newPassword } = req.body;
+    try {
+        if (!email || !code || !newPassword) {
+            res.status(400).json({ message: 'Missing required fields: email, code, newPassword' });
+            return;
+        }
+
+        const resetRecord = await PasswordResetModel.findOne({
+            email,
+            code,
+            isUsed: false,
+            expiresAt: { $gt: new Date() } 
+        });
+
+        if (!resetRecord) {
+            res.status(400).json({ message: 'Invalid or expired reset code' });
+            return;
+        }
+
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await UserModel.findByIdAndUpdate(user._id, { password: hashedPassword });
+
+        await PasswordResetModel.findByIdAndUpdate(resetRecord._id, { isUsed: true });
+
+        res.status(200).json({ message: 'Password updated successfully' });
+    } catch (err) {
+        console.error('Reset error:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
 };
 
 type tUser = Document<unknown, {}, IUser> & IUser & Required<{
@@ -327,6 +371,7 @@ const refresh = async (req: Request, res: Response) => {
     }
 };
 
+//Change password for logged user
 const changePassword = async (req: Request, res: Response) => {
   const userId = req.params.userId as string;
   const { currentPassword, newPassword } = req.body;
