@@ -182,7 +182,7 @@ router.post("/logout", authController.logout);
  * @swagger
  * /auth/forgot:
  *   post:
- *     summary: Generate password reset token
+ *     summary: Send password reset code to email
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -193,11 +193,24 @@ router.post("/logout", authController.logout);
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
+ *             required:
+ *               - email
  *     responses:
  *       200:
- *         description: Reset token generated
+ *         description: Reset code sent to email
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Password reset code sent to your email"
  *       404:
  *         description: User not found
+ *       500:
+ *         description: Server error or email sending failed
  */
 router.post("/forgot", authController.forgotPassword);
 
@@ -205,7 +218,7 @@ router.post("/forgot", authController.forgotPassword);
  * @swagger
  * /auth/reset:
  *   post:
- *     summary: Reset password using token
+ *     summary: Reset password using email and verification code
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -214,15 +227,36 @@ router.post("/forgot", authController.forgotPassword);
  *           schema:
  *             type: object
  *             properties:
- *               token:
+ *               email:
  *                 type: string
+ *                 format: email
+ *               code:
+ *                 type: string
+ *                 description: 6-digit verification code sent to email
  *               newPassword:
  *                 type: string
+ *                 minLength: 6
+ *             required:
+ *               - email
+ *               - code
+ *               - newPassword
  *     responses:
  *       200:
- *         description: Password updated
+ *         description: Password updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Password updated successfully"
  *       400:
- *         description: Invalid or expired token
+ *         description: Missing fields, invalid or expired code
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
  */
 router.post("/reset", authController.resetPassword);
 
