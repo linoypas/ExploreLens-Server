@@ -1,28 +1,18 @@
-import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'valeriya312002@cs.colman.ac.il',
-      pass: process.env.EMAIL_PASSWORD 
-    },
-    tls: {
-      rejectUnauthorized: false
-    }
-  });
-};
+sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
 export const sendPasswordResetEmail = async (email: string, code: string): Promise<boolean> => {
   try {
-    const transporter = createTransporter();
-    
-    const mailOptions = {
-      from: 'valeriya312002@cs.colman.ac.il',
+    const msg = {
       to: email,
+      from: {
+        email: 'valeriya312002@cs.colman.ac.il',
+        name: 'ExploreLens Team'
+      },
       subject: 'Password Reset Code - ExploreLens',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -39,10 +29,11 @@ export const sendPasswordResetEmail = async (email: string, code: string): Promi
       `
     };
 
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(msg);
+    console.log('Email sent successfully via SendGrid');
     return true;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('Error sending email via SendGrid:', error);
     return false;
   }
 };
