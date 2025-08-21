@@ -41,7 +41,7 @@ const options = {
       version: "1.0.0",
       description: "REST server including authentication using JWT",
     },
-    servers: [{ url: `http://10.10.248.134:${PORT}` },{ url: `https://explorelensserver.cs.colman.ac.il:${PORT}` }],
+    servers: [{ url: `http://localhost:${PORT}` }],
   },
   apis: ["./src/routes/*.ts" , "./src/chat/routes/*.ts"],
 };
