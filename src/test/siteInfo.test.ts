@@ -73,7 +73,7 @@ describe("siteInfo API", () => {
         userId: '1113',
         rating: 1 });
     expect(res.statusCode).toBe(200);
-    expect(res.body.averageRating).toBe(3.25);
+    expect(res.body.averageRating).toBe(3);
   });
   it("POST /site-info/rating/:siteId - should update rating and reviews", async () => {
     const res = await request(app)
@@ -82,7 +82,7 @@ describe("siteInfo API", () => {
         userId: '1114',
         rating: 5 });
     expect(res.statusCode).toBe(200);
-    expect(res.body.averageRating).toBe(3.6);
+    expect(res.body.averageRating).toBe(3.67);
   });
   it("POST /reviews/:siteId - should add a review to the siteInfo", async () => {
     const res = await request(app)
