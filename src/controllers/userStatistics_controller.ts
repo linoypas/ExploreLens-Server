@@ -9,6 +9,12 @@ class UserStatisticsController {
     const { userId } = req.params;
     try {
             const visitedSiteNames = await this.getVisitedSiteNames(userId);
+            
+            if (visitedSiteNames.length === 0) {
+                res.status(200).send(this.returnEmptyResult(userId));
+                return;
+            }
+
             const sitesListString = visitedSiteNames.map((n) => `- ${n}`).join("\n");
 
             const percentageVisited = await this.calculatePercentageVisited(sitesListString);
@@ -82,6 +88,16 @@ Reply with a comma-separated list of country names only
 
   return countries;
 }  
+
+  private returnEmptyResult(userId: string): IUserStatistics {
+    return {
+      userId,
+      percentageVisited: "0%",
+      countryCount: 0,
+      countries: [],
+      siteCount: 0
+    };
+  }
 
 }
 
